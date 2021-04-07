@@ -6,7 +6,7 @@ import { middyfy } from "@libs/lambda";
 
 const fetchData = () => Promise.resolve({ weather: "rainy" });
 
-const getWeatherInfo = async (
+export const getWeatherInfo = async (
   event: APIGatewayProxyEventDefault
 ): Promise<any> => {
   try {

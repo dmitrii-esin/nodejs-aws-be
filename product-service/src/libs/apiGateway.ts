@@ -15,9 +15,14 @@ export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<
   APIGatewayProxyResult
 >;
 
+export interface Error {
+  code: number;
+  message: string;
+}
+
 const CORSHeaders = {
-  "Access-Control-Allow-Origin": "*", // Required for CORS support to work
-  "Access-Control-Allow-Credentials": true, // Required for CORS support to work
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": true,
 };
 
 export const formatJSONResponse = (response: Record<string, unknown>) => {
@@ -28,9 +33,9 @@ export const formatJSONResponse = (response: Record<string, unknown>) => {
   };
 };
 
-export const formatJSONError = (error: Record<string, unknown>) => {
+export const formatJSONError = (error: Error) => {
   return {
-    statusCode: error.statusCode,
+    statusCode: error.code,
     headers: {
       ...CORSHeaders,
       "Content-Type": "text/plain",

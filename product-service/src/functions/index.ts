@@ -1,3 +1,3 @@
 export { default as getProductsList } from "./getProductsList";
-export { default as getProductsById } from "./getProductsById";
+export { default as getProductById } from "./getProductById";
 export { default as getWeatherInfo } from "./getWeatherInfo";
