@@ -13,7 +13,7 @@ export const getProductsList:
   | ValidatedEventAPIGatewayProxyEvent<never>
   | any = async (event: APIGatewayProxyEventDefault) => {
   try {
-    const normalizedData = normalizeJsonAsArray(data);
+    const normalizedData = await normalizeJsonAsArray(data);
 
     return formatJSONResponse({
       data: normalizedData,
