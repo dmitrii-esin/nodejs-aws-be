@@ -1,7 +1,7 @@
 {
   "name": "product-service",
   "version": "1.0.0",
-  "description": "Serverless aws-nodejs-typescript template",
+  "description": "product service",
   "main": "serverless.ts",
   "scripts": {
     "test": "jest",
