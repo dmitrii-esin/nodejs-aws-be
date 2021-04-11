@@ -8,4 +8,4 @@ export const parseJson = (json: JSONValue): any =>
 
 export const normalizeJsonAsArray = async (
   data: JSONValue
-): Promise<Array<any>> => parseJson(data)?.default || [];
+): Promise<Array<any>> => parseJson(data).default;

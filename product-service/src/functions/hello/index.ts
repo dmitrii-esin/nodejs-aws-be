@@ -7,7 +7,7 @@ export default {
     {
       http: {
         method: "put",
-        path: "product",
+        path: "hello",
         cors: true,
         request: {
           schema: {

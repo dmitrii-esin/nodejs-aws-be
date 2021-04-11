@@ -1,3 +1,11 @@
+import { statusCodesMap } from "src/constants";
+
+export type ResponseType = {
+  statusCode: Values<typeof statusCodesMap>;
+  headers: Object;
+  body: Object;
+};
+
 export interface Product {
   count: number;
   description: string;

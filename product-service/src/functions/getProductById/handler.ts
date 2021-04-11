@@ -1,39 +1,49 @@
 import "source-map-support/register";
 
-import type {
-  ValidatedEventAPIGatewayProxyEvent,
-  APIGatewayProxyEventDefault,
-} from "@libs/apiGateway";
-import { formatJSONResponse, formatJSONError } from "@libs/apiGateway";
 import { middyfy } from "@libs/lambda";
-import { normalizeJsonAsArray } from "@libs/jsonParser";
-import { Product } from "@domain/product";
-import * as data from "@db/product-list.json";
+import {
+  formatSuccessResponse,
+  formatErrorResponse,
+} from "@libs/apiResponseBuilder";
+import { winstonLogger } from "@libs/winstonLogger";
+import { ResponseType, Product } from "src/types";
+import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
+import { getProductById as getProductByIdService } from "src/services";
 
-export const getProductById:
-  | ValidatedEventAPIGatewayProxyEvent<never>
-  | any = async (event: APIGatewayProxyEventDefault) => {
+export const getProductById: (
+  event,
+  _context
+) => Promise<ResponseType> = async (event, _context) => {
   try {
-    const normalizedData: Product[] = await normalizeJsonAsArray(data);
-    const currentProductId = event.pathParameters.id;
+    winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-    const currentProduct: Product = normalizedData.find(
-      (ticket: Product) => ticket.id === currentProductId
-    );
+    const { id = "" } = event.pathParameters;
 
-    if (!currentProduct) {
-      return formatJSONError({
-        code: 404,
-        message: `Product with id: ${currentProductId} is not found`,
-      });
+    if (!id) {
+      return formatSuccessResponse(
+        null,
+        statusCodesMap[STATUS_MESSAGES.BAD_REQUEST],
+        STATUS_MESSAGES.BAD_REQUEST
+      );
     }
 
-    return formatJSONResponse({
-      data: currentProduct,
-      event,
-    });
+    const product: Product = await getProductByIdService(id);
+
+    winstonLogger.logRequest(
+      `!!Received product with id: ${id}: ${JSON.stringify(product)}`
+    );
+
+    if (!product) {
+      return formatSuccessResponse(
+        null,
+        statusCodesMap[STATUS_MESSAGES.NOT_FOUND],
+        STATUS_MESSAGES.NOT_FOUND
+      );
+    }
+
+    return formatSuccessResponse(product);
   } catch (error) {
-    return formatJSONError(error);
+    return formatErrorResponse(error);
   }
 };
 

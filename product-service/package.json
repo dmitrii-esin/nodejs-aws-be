@@ -6,7 +6,12 @@
   "scripts": {
     "test": "jest",
     "invoke:local": "sls invoke local --function",
-    "deploy": "sls deploy"
+    "invoke:local:all": "sls invoke local -f getProducts --stage dev",
+    "deploy:dev": "sls deploy --stage dev",
+    "deploy:prod": "sls deploy --stage prod",
+    "remove:dev-stack": "sls remove --stage dev",
+    "remove:prod-stack": "sls remove --stage prod",
+    "documentation:generate": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id ie2svy46v9 --stage-name dev --export-type swagger swagger.json"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -14,7 +19,8 @@
   "dependencies": {
     "@middy/core": "^1.5.2",
     "@middy/http-json-body-parser": "^1.5.2",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@serverless/typescript": "^2.23.0",

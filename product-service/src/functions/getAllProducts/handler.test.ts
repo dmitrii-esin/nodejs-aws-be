@@ -1,5 +1,6 @@
 import { Context } from "aws-lambda";
-import { getProductsList } from "./handler";
+import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
+import { getAllProducts } from "./handler";
 
 const MOCK_PARAMS = {
   event: {},
@@ -42,14 +43,10 @@ const MOCK_PARAMS = {
   callback: undefined,
 };
 
-describe("lambda getProductsList", () => {
-  it("lambda getProductsList runs corretly", async () => {
-    const result = await getProductsList(
-      MOCK_PARAMS.event,
-      MOCK_PARAMS.context,
-      MOCK_PARAMS.callback
-    );
+describe("lambda getAllProducts", () => {
+  it("lambda getAllProducts runs corretly", async () => {
+    const result = await getAllProducts(MOCK_PARAMS.event, MOCK_PARAMS.context);
 
-    expect(result.statusCode).toBe(200);
+    expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.SUCCESS]);
   });
 });
