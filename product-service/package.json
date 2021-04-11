@@ -6,13 +6,13 @@
   "scripts": {
     "test": "jest",
     "invoke:local": "sls invoke local --function",
-    "invoke:local:all": "sls invoke local -f getProducts --stage dev",
     "deploy:dev": "sls deploy --stage dev",
     "deploy:prod": "sls deploy --stage prod",
     "remove:dev-stack": "sls remove --stage dev",
     "remove:prod-stack": "sls remove --stage prod",
     "documentation:generate": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id ie2svy46v9 --stage-name dev --export-type swagger ./src/documentation/swagger.json",
-    "documentation:open": "ts-node ./src/documentation/index.ts"
+    "documentation:open": "ts-node ./src/documentation/index.ts",
+    "start:offline": "sls offline --disableCookieValidation start --stage dev"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -34,6 +34,7 @@
     "jest": "^26.6.3",
     "json-schema-to-ts": "^1.5.0",
     "serverless": "^2.23.0",
+    "serverless-offline": "^6.9.0",
     "serverless-webpack": "^5.3.5",
     "swagger-ui-express": "^4.1.6",
     "ts-jest": "^26.5.4",
