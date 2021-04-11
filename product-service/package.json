@@ -11,7 +11,8 @@
     "deploy:prod": "sls deploy --stage prod",
     "remove:dev-stack": "sls remove --stage dev",
     "remove:prod-stack": "sls remove --stage prod",
-    "documentation:generate": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id ie2svy46v9 --stage-name dev --export-type swagger swagger.json"
+    "documentation:generate": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id ie2svy46v9 --stage-name dev --export-type swagger ./src/documentation/swagger.json",
+    "documentation:open": "ts-node ./src/documentation/index.ts"
   },
   "engines": {
     "node": ">=14.15.0"
@@ -25,12 +26,16 @@
   "devDependencies": {
     "@serverless/typescript": "^2.23.0",
     "@types/aws-lambda": "^8.10.71",
+    "@types/express": "^4.17.11",
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.25",
+    "@types/swagger-ui-express": "^4.1.2",
+    "express": "^4.17.1",
     "jest": "^26.6.3",
     "json-schema-to-ts": "^1.5.0",
     "serverless": "^2.23.0",
     "serverless-webpack": "^5.3.5",
+    "swagger-ui-express": "^4.1.6",
     "ts-jest": "^26.5.4",
     "ts-loader": "^8.0.15",
     "ts-node": "^9.1.1",
