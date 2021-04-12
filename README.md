@@ -8,18 +8,19 @@ This project was bootstrapped with [Serverless framework](https://www.serverless
 -   AWS CLI must be configured with personal credentials
 
 ## Setup
-
 ```bash
-npm install
+cd ./product-service && npm install
 ```
 
 ## Deployment 
 ```bash
-npm run deploy
+cd ./product-service && npm run deploy:dev
 ```
 
 ## Swagger
-TBD
+```bash
+cd ./product-service && npm run documentation:generate && npm run documentation:open
+```
 
 ## Changelog
 ### task3-product-api
