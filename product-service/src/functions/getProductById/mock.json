@@ -1,0 +1,9 @@
+{
+  "statusCode": 200,
+  "headers": {
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Origin": "*"
+  },
+  "body": "{\"message\":\"SUCCESS\",\"data\":{\"count\":43,\"description\":\"Sepultura, Crowbar, Sacred Reich, Art Of Shock\",\"date\":\"2021-04-04T08:00:00.000Z\",\"location\":\"8001 S Eastern Ave, 73149 Oklahoma City Oklahoma, USA\",\"id\":\"7567ec4b-b10c-48c5-9345-fc73c48a80aa\",\"price\":2.4,\"title\":\"Sepultura - Quadra Tour 2021\",\"image\":\"https://metal-tickets-store-pics-bucket.s3-eu-west-1.amazonaws.com/sepulturaquadratour.webp\"}}"
+}
