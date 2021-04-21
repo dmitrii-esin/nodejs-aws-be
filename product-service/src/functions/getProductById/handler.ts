@@ -1,19 +1,18 @@
 import "source-map-support/register";
 
-import { middyfy } from "@libs/lambda";
 import {
   formatSuccessResponse,
   formatErrorResponse,
 } from "@libs/apiResponseBuilder";
 import { winstonLogger } from "@libs/winstonLogger";
-import { ResponseType, Product } from "src/types";
+import { ResponseType, Product, ProductServiceInterface } from "src/types";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
-import { getProductById as getProductByIdService } from "src/services";
 
 export const getProductById: (
-  event,
-  _context
-) => Promise<ResponseType> = async (event, _context) => {
+  productService: ProductServiceInterface
+) => (event, _context) => Promise<ResponseType> = (
+  productService: ProductServiceInterface
+) => async (event, _context) => {
   try {
     winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
@@ -27,7 +26,7 @@ export const getProductById: (
       );
     }
 
-    const product: Product = await getProductByIdService(id);
+    const product: Product = await productService.getProductById(id);
 
     winstonLogger.logRequest(
       `!!Received product with id: ${id}: ${JSON.stringify(product)}`
@@ -46,5 +45,3 @@ export const getProductById: (
     return formatErrorResponse(error);
   }
 };
-
-export const main = middyfy(getProductById);
