@@ -12,7 +12,7 @@ export const migrateSchema = (client: Client) => async (event, _context) => {
     await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
     await client.query(`
             CREATE TABLE IF NOT EXISTS products (
-                id UUID DEFAULT uuid_generate_v4(),
+                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
                 count INT,
                 date TEXT,
                 description TEXT,

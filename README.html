@@ -35,6 +35,9 @@
 <h2 id="setup">Setup</h2>
 <pre><code class="language-bash"><div><span class="hljs-built_in">cd</span> ./product-service &amp;&amp; npm install
 </div></code></pre>
+<h2 id="run-offline">Run offline</h2>
+<pre><code class="language-bash"><div><span class="hljs-built_in">cd</span> ./product-service &amp;&amp; npm run start:offline
+</div></code></pre>
 <h2 id="deployment">Deployment</h2>
 <pre><code class="language-bash"><div><span class="hljs-built_in">cd</span> ./product-service &amp;&amp; npm run deploy:dev
 </div></code></pre>
@@ -80,13 +83,14 @@ Main:</p>
 <li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - All lambdas do console.log for each incoming requests and their arguments</li>
 <li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> +1 - Transaction based creation of product (in case stock creation is failed then related to this stock product is not created and not ready to be used by the end user and vice versa) (<a href="https://devcenter.kinvey.com/nodejs/tutorials/bl-transactional-support">https://devcenter.kinvey.com/nodejs/tutorials/bl-transactional-support</a>)</li>
 </ul>
-<p>endpoints:<br>
-GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a><br>
-GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/%7Bid%7D">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}</a><br>
-POST - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a><br>
-GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate</a></p>
-<p>frontend app link:<br>
-<a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a></p>
+<p>endpoints:</p>
+<ul>
+<li>GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a></li>
+<li>GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/%7Bid%7D">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}</a></li>
+<li>POST - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a></li>
+<li>GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate</a></li>
+</ul>
+<p>frontend app link: <a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a></p>
 
     </body>
     </html>

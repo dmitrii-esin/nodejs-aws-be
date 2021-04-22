@@ -12,6 +12,11 @@ This project was bootstrapped with [Serverless framework](https://www.serverless
 cd ./product-service && npm install
 ```
 
+## Run offline 
+```bash
+cd ./product-service && npm run start:offline
+```
+
 ## Deployment 
 ```bash
 cd ./product-service && npm run deploy:dev
@@ -57,10 +62,9 @@ Additional:
 - [ ] +1 - Transaction based creation of product (in case stock creation is failed then related to this stock product is not created and not ready to be used by the end user and vice versa) (https://devcenter.kinvey.com/nodejs/tutorials/bl-transactional-support)
 
 endpoints:
-  GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products
-  GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}
-  POST - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products
-  GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate
+- GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products
+- GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}
+- POST - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products
+- GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate
 
-frontend app link: 
-  https://d12t0bvcb8pyyn.cloudfront.net
+frontend app link: https://d12t0bvcb8pyyn.cloudfront.net
