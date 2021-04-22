@@ -64,6 +64,29 @@ GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/produc
 <li>Link to FE app :<br>
 <a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a></li>
 </ul>
+<h3 id="task4-rds">task4-rds</h3>
+<p>All tasks implemented without additional stocks table:<br>
+Main:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> 1 - Task 4.1 is implemented</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> 3 - TASK 4.2 is implemented lambda links are provided and returns data</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> 4 - TASK 4.3 is implemented lambda links are provided and products is stored in DB (call TASK 4.2 to see the product)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> 5 - Your own Frontend application is integrated with product service (/products API) and products from product-service are represented on Frontend. Link to a working Front-End application is provided for cross-check reviewer.</li>
+</ul>
+<p>Additional:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - POST/products lambda functions returns error 400 status code if product data is invalid</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - All lambdas return error 500 status code on any error (DB connection, any unhandled error in code)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - All lambdas do console.log for each incoming requests and their arguments</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" disabled="" type="checkbox"> +1 - Transaction based creation of product (in case stock creation is failed then related to this stock product is not created and not ready to be used by the end user and vice versa) (<a href="https://devcenter.kinvey.com/nodejs/tutorials/bl-transactional-support">https://devcenter.kinvey.com/nodejs/tutorials/bl-transactional-support</a>)</li>
+</ul>
+<p>endpoints:<br>
+GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a><br>
+GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/%7Bid%7D">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}</a><br>
+POST - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a><br>
+GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate</a></p>
+<p>frontend app link:<br>
+<a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a></p>
 
     </body>
     </html>

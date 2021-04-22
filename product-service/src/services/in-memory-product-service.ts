@@ -1,5 +1,5 @@
 import { ProductServiceInterface, Product } from "src/types";
-import products from "@db/products.json";
+import products from "./products.json";
 import { CustomError } from "src/customError";
 import { v4 as uuidv4 } from "uuid";
 

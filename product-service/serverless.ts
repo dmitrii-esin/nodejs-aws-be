@@ -78,7 +78,8 @@ const serverlessConfiguration: AWS = {
             cors: true,
             request: {
               schema: {
-                "application/json": "./src/schemas/createProductSchema.json",
+                "application/json":
+                  "${file(src/schemas/createProductSchema.json)}",
               },
             },
           },
