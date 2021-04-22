@@ -7,9 +7,6 @@ const serverlessConfiguration: AWS = {
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
-      //TODO:!!! проверить, если не пбудет работать то просто заимпортить
-      // dotenvVars: "${file(configs.js)}",
-      dotenvVars: "./configs.js",
     },
   },
   plugins: [
@@ -31,13 +28,11 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       ENV_STAGE: "${opt:stage, 'dev'}",
-      PGHOST: "${self:custom.dotenvVars.PGHOST, env:PGHOST, 'kokoko'}",
-      PGPORT: "${self:custom.dotenvVars.PGPORT, env:PGPORT, 'kokoo'}",
-      PGUSER: "${self:custom.dotenvVars.PGUSER, env:PGUSER, 'kokoko'}",
-      PGPASSWORD:
-        "${self:custom.dotenvVars.PGPASSWORD, env:PGPASSWORD, 'kokoko'}",
-      PGDATABASE:
-        "${self:custom.dotenvVars.PGDATABASE, env:PGDATABASE, 'kokoko'}",
+      PGHOST: "${env:PGHOST, ''}",
+      PGPORT: "${env:PGPORT, ''}",
+      PGUSER: "${env:PGUSER, ''}",
+      PGPASSWORD: "${env:PGPASSWORD, ''}",
+      PGDATABASE: "${env:PGDATABASE, ''}",
     },
     lambdaHashingVersion: "20201221",
   },

@@ -7,7 +7,7 @@ import {
   formatErrorResponse,
 } from "@libs/apiResponseBuilder";
 
-export const createProductHandler = (
+export const createProduct = (
   productService: ProductServiceInterface
 ) => async (event, _context): Promise<ResponseType> => {
   try {

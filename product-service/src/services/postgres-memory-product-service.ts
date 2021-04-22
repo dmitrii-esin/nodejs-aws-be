@@ -1,5 +1,6 @@
-import { ProductServiceInterface, Product } from "src/types";
 import { Client, QueryConfig } from "pg";
+import { ProductServiceInterface, Product } from "src/types";
+import { CustomError } from "src/customError";
 
 class PostgresProductService implements ProductServiceInterface {
   private tableName = "products";
@@ -7,22 +8,32 @@ class PostgresProductService implements ProductServiceInterface {
   constructor(private databaseClient: Client) {}
 
   async getProductById(id: string): Promise<Product> {
-    const query = {
-      text: `SELECT * FROM ${this.tableName} WHERE id = $1`,
-      values: [id],
-    } as QueryConfig;
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName} WHERE id = $1`,
+        values: [id],
+      } as QueryConfig;
 
-    const result = await this.databaseClient.query(query);
-    return result.rows[0] ? result.rows[0] : null;
+      const result = await this.databaseClient.query(query);
+      return result.rows[0] ? result.rows[0] : null;
+    } catch (error) {
+      const { code, message, stack } = error;
+      throw new CustomError({ code, message });
+    }
   }
 
   async getAllProducts(): Promise<Product[]> {
-    const query = {
-      text: `SELECT * FROM ${this.tableName}`,
-    } as QueryConfig;
+    try {
+      const query = {
+        text: `SELECT * FROM ${this.tableName}`,
+      } as QueryConfig;
 
-    const result = await this.databaseClient.query(query);
-    return result.rows ? result.rows : null;
+      const result = await this.databaseClient.query(query);
+      return result.rows ? result.rows : null;
+    } catch (error) {
+      const { code, message, stack } = error;
+      throw new CustomError({ code, message });
+    }
   }
 
   async create(
@@ -37,20 +48,25 @@ class PostgresProductService implements ProductServiceInterface {
       | "image"
     >
   ) {
-    const query = {
-      text: `INSERT INTO ${this.tableName}(count, description, date, location, price, title, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      values: [
-        product.count,
-        product.description,
-        product.date,
-        product.location,
-        product.price,
-        product.title,
-        product.image,
-      ],
-    };
-    const result = await this.databaseClient.query(query);
-    return result.rows[0] ? result.rows[0] : null;
+    try {
+      const query = {
+        text: `INSERT INTO ${this.tableName}(count, description, date, location, price, title, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        values: [
+          product.count,
+          product.description,
+          product.date,
+          product.location,
+          product.price,
+          product.title,
+          product.image,
+        ],
+      };
+      const result = await this.databaseClient.query(query);
+      return result.rows[0] ? result.rows[0] : null;
+    } catch (error) {
+      const { code, message, stack } = error;
+      throw new CustomError({ code, message });
+    }
   }
 }
 

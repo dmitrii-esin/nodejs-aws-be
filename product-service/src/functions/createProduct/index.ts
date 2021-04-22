@@ -1,1 +1,1 @@
-export { createProductHandler } from "./handler";
+export { createProduct } from "./handler";
