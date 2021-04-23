@@ -1,0 +1,7 @@
+.serverless/
+.webpack/
+.next/
+/node_modules/
+package.json
+bin
+*.d.ts

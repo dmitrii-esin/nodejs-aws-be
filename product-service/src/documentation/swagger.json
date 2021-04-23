@@ -1,19 +1,19 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "2021-04-11T09:09:09Z",
+    "version" : "2021-04-22T17:02:09Z",
     "title" : "product-service-dev"
   },
   "host" : "ie2svy46v9.execute-api.eu-west-1.amazonaws.com",
   "basePath" : "/dev",
   "schemes" : [ "https" ],
   "paths" : {
-    "/products" : {
+    "/migrate" : {
       "get" : {
         "responses" : { },
         "x-amazon-apigateway-integration" : {
           "httpMethod" : "POST",
-          "uri" : "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:102883801257:function:product-service-dev-getAllProducts/invocations",
+          "uri" : "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:102883801257:function:product-service-dev-migrateSchema/invocations",
           "passthroughBehavior" : "when_no_match",
           "type" : "aws_proxy"
         }
@@ -43,6 +43,77 @@
               "statusCode" : "200",
               "responseParameters" : {
                 "method.response.header.Access-Control-Allow-Methods" : "'OPTIONS,GET'",
+                "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin" : "'*'"
+              },
+              "responseTemplates" : {
+                "application/json" : "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".+\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+              }
+            }
+          },
+          "requestTemplates" : {
+            "application/json" : "{statusCode:200}"
+          },
+          "passthroughBehavior" : "when_no_match",
+          "contentHandling" : "CONVERT_TO_TEXT",
+          "type" : "mock"
+        }
+      }
+    },
+    "/products" : {
+      "get" : {
+        "responses" : { },
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:102883801257:function:product-service-dev-getAllProducts/invocations",
+          "passthroughBehavior" : "when_no_match",
+          "type" : "aws_proxy"
+        }
+      },
+      "post" : {
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "produApiGa10E1J8PE5LAV5",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/produApiGa10E1J8PE5LAV5"
+          }
+        } ],
+        "responses" : { },
+        "x-amazon-apigateway-request-validator" : "produ-ApiGa-MSTZRALTATUB",
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:102883801257:function:product-service-dev-createProductHandler/invocations",
+          "passthroughBehavior" : "when_no_match",
+          "type" : "aws_proxy"
+        }
+      },
+      "options" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Methods" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Headers" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "responses" : {
+            "default" : {
+              "statusCode" : "200",
+              "responseParameters" : {
+                "method.response.header.Access-Control-Allow-Methods" : "'OPTIONS,POST,GET'",
                 "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
                 "method.response.header.Access-Control-Allow-Origin" : "'*'"
               },
@@ -117,6 +188,43 @@
           "type" : "mock"
         }
       }
+    }
+  },
+  "definitions" : {
+    "produApiGa10E1J8PE5LAV5" : {
+      "type" : "object",
+      "required" : [ "count", "date", "description", "image", "location", "price", "title" ],
+      "properties" : {
+        "date" : {
+          "type" : "string"
+        },
+        "image" : {
+          "type" : "string"
+        },
+        "price" : {
+          "type" : "number"
+        },
+        "count" : {
+          "type" : "number"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "location" : {
+          "type" : "string"
+        },
+        "title" : {
+          "type" : "string"
+        }
+      },
+      "title" : "CreateProductValidation",
+      "description" : "Payload used to validate create product functionality"
+    }
+  },
+  "x-amazon-apigateway-request-validators" : {
+    "produ-ApiGa-MSTZRALTATUB" : {
+      "validateRequestParameters" : true,
+      "validateRequestBody" : true
     }
   },
   "x-amazon-apigateway-minimum-compression-size" : 1024

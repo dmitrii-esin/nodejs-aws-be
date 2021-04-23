@@ -5,6 +5,8 @@
   "main": "serverless.ts",
   "scripts": {
     "test": "jest",
+    "lint": "eslint --ext .ts",
+    "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "invoke:local": "sls invoke local --function",
     "deploy:dev": "sls deploy --stage dev",
     "deploy:prod": "sls deploy --stage prod",
@@ -33,9 +35,17 @@
     "@types/pg": "^7.14.11",
     "@types/swagger-ui-express": "^4.1.2",
     "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.23.2",
     "express": "^4.17.1",
+    "husky": "^6.0.0",
     "jest": "^26.6.3",
     "json-schema-to-ts": "^1.5.0",
+    "prettier": "^2.2.1",
     "serverless": "^2.23.0",
     "serverless-dotenv-plugin": "^3.9.0",
     "serverless-offline": "^6.9.0",
@@ -52,5 +62,10 @@
     "webpack-node-externals": "^2.5.2"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
-  "license": "MIT"
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged && npm run lint && npm run type-check && npm run test"
+    }
+  }
 }

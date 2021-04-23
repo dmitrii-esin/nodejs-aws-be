@@ -13,7 +13,9 @@ export const createProduct = (
   try {
     winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-    const product: Product = await productService.create(event.body);
+    const product: Product = await productService.create(
+      JSON.parse(event.body)
+    );
 
     winstonLogger.logRequest(`!!Created product: ${JSON.stringify(product)}`);
 
