@@ -21,5 +21,10 @@
   },
   "homepage": "https://github.com/dmitrii-esin/nodejs-aws-be#readme",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "cd ./product-service && pretty-quick --staged && npm run lint && npm run type-check && npm run test"
+    }
+  }
 }
