@@ -1,0 +1,1 @@
+export { migrateSchema } from "./handler";

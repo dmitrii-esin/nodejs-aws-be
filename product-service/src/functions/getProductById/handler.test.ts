@@ -1,8 +1,9 @@
 import { Context } from "aws-lambda";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
+import { InMemoryProductService } from "src/services/in-memory-product-service";
 import { getProductById } from "./handler";
 
-const MOCK_PARAMS = {
+const PARAMS = {
   context: {
     awsRequestId: "1a66805d-48b3-4f6d-b078-01135f76a3e3",
     invokeid: "id",
@@ -42,28 +43,31 @@ const MOCK_PARAMS = {
   callback: undefined,
 };
 
-const MOCK_PARAMS_WITH_CORRECT_PRODUCT_ID = {
-  ...MOCK_PARAMS,
+const PARAMS_WITH_CORRECT_PRODUCT_ID = {
+  ...PARAMS,
   event: {
     pathParameters: { id: "7567ec4b-b10c-48c5-9345-fc73c48a80aa" },
   },
 };
 
-const MOCK_PARAMS_WITH_NON_EXISTENT_PRODUCT_ID = {
-  ...MOCK_PARAMS,
+const PARAMS_WITH_NON_EXISTENT_PRODUCT_ID = {
+  ...PARAMS,
   event: { pathParameters: { id: "123" } },
 };
 
-const MOCK_PARAMS_WITHOUT_PRODUCT_ID = {
-  ...MOCK_PARAMS,
+const PARAMS_WITHOUT_PRODUCT_ID = {
+  ...PARAMS,
   event: { pathParameters: { id: "" } },
 };
 
 describe("lambda getProductById", () => {
   it("lambda getProductById with correct id runs corretly", async () => {
-    const result = await getProductById(
-      MOCK_PARAMS_WITH_CORRECT_PRODUCT_ID.event,
-      MOCK_PARAMS_WITH_CORRECT_PRODUCT_ID.context
+    const productService = new InMemoryProductService();
+    const connectedGetProductById = getProductById(productService);
+
+    const result = await connectedGetProductById(
+      PARAMS_WITH_CORRECT_PRODUCT_ID.event,
+      PARAMS_WITH_CORRECT_PRODUCT_ID.context
     );
 
     expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.SUCCESS]);
@@ -72,9 +76,12 @@ describe("lambda getProductById", () => {
 
 describe("lambda getProductById", () => {
   it("lambda getProductById with non-existent id runs corretly", async () => {
-    const result = await getProductById(
-      MOCK_PARAMS_WITH_NON_EXISTENT_PRODUCT_ID.event,
-      MOCK_PARAMS_WITH_NON_EXISTENT_PRODUCT_ID.context
+    const productService = new InMemoryProductService();
+    const connectedGetProductById = getProductById(productService);
+
+    const result = await connectedGetProductById(
+      PARAMS_WITH_NON_EXISTENT_PRODUCT_ID.event,
+      PARAMS_WITH_NON_EXISTENT_PRODUCT_ID.context
     );
 
     expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.NOT_FOUND]);
@@ -83,9 +90,12 @@ describe("lambda getProductById", () => {
 
 describe("lambda getProductById", () => {
   it("lambda getProductById without id runs corretly", async () => {
-    const result = await getProductById(
-      MOCK_PARAMS_WITHOUT_PRODUCT_ID.event,
-      MOCK_PARAMS_WITHOUT_PRODUCT_ID.context
+    const productService = new InMemoryProductService();
+    const connectedGetProductById = getProductById(productService);
+
+    const result = await connectedGetProductById(
+      PARAMS_WITHOUT_PRODUCT_ID.event,
+      PARAMS_WITHOUT_PRODUCT_ID.context
     );
 
     expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.BAD_REQUEST]);

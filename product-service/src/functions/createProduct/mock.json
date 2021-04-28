@@ -1,0 +1,9 @@
+{
+  "statusCode": 200,
+  "headers": {
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Origin": "*"
+  },
+  "body": "{\"message\":\"SUCCESS\",\"data\":{\"id\":\"20a5caf2-21c2-47dc-b6d7-cc7dca1d9fa4\",\"count\":17736884,\"date\":\"cillum aliquip minim\",\"description\":\"Duis sunt\",\"image\":\"aute sit minim\",\"location\":\"in\",\"price\":40831755,\"title\":\"adipisicing eu aliquip occaecat\"}}"
+}
