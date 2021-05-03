@@ -68,3 +68,22 @@ endpoints:
 - GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate
 
 frontend app link: https://d12t0bvcb8pyyn.cloudfront.net
+
+ ### task5-import-to-s3
+ Main:
+- [x] 1 - Task 5.1 is implemented (importe-service created, importProductsFile implemented)
+- [x] 2 - TASK 5.2 is implemented (importFileParser implemented with issues)
+
+Additional:
+- [x] +1 - async/await is used in lambda functions
+- [ ] +1 - importProductsFile lambda is covered by unit tests (aws-sdk-mock can be used to mock S3 methods - https://www.npmjs.com/package/aws-sdk-mock)
+- [ ] +1 - At the end of the stream the lambda function should move the file from the uploaded folder into the parsed folder (move the file means that file should be copied into parsed folder, and then deleted from uploaded folder)
+
+endpoints:
+- GET - https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import
+functions:
+- importProductsFile: import-service-dev-importProductsFile
+- importFileParser: import-service-dev-importFileParser
+
+frontend app link: https://d12t0bvcb8pyyn.cloudfront.net
+frontend repository PR link: https://github.com/dmitrii-esin/nodejs-aws-fe/pull/3
