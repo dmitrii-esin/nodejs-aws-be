@@ -72,7 +72,7 @@ frontend app link: https://d12t0bvcb8pyyn.cloudfront.net
  ### task5-import-to-s3
  Main:
 - [x] 1 - Task 5.1 is implemented (importe-service created, importProductsFile implemented)
-- [x] 2 - TASK 5.2 is implemented (importFileParser implemented with issues)
+- [x] 2 - TASK 5.2 is implemented (importFileParser implemented)
 
 Additional:
 - [x] +1 - async/await is used in lambda functions
@@ -81,6 +81,7 @@ Additional:
 
 endpoints:
 - GET - https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import
+
 functions:
 - importProductsFile: import-service-dev-importProductsFile
 - importFileParser: import-service-dev-importFileParser
