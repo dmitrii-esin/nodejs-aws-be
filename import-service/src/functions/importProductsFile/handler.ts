@@ -1,6 +1,6 @@
 import "source-map-support/register";
 
-import { S3Event, APIGatewayEvent, Context } from "aws-lambda";
+import { Context } from "aws-lambda";
 import S3 from "aws-sdk/clients/s3";
 import { ResponseType } from "src/types";
 import { winstonLogger } from "@libs/winstonLogger";
@@ -26,7 +26,10 @@ export const importProductsFile = async (
     );
   }
 
-  const s3 = new S3({ region: "eu-west-1" });
+  const s3 = new S3({
+    region: "eu-west-1",
+    signatureVersion: "v4",
+  });
   const BUCKET_NAME = process.env.BUCKET_NAME;
   const catalogPath = `uploaded/${fileName}`;
 
@@ -35,16 +38,17 @@ export const importProductsFile = async (
     Key: catalogPath,
     Expires: 60,
     ContentType: "text/csv",
+    ACL: "public-read",
   };
 
   try {
     const s3Response = await s3.getSignedUrlPromise("putObject", params);
 
     winstonLogger.logRequest(
-      `!!importProductsFile: ${JSON.stringify({ result: s3Response })}`
+      `!!importProductsFile: ${JSON.stringify(s3Response)}`
     );
 
-    return formatSuccessResponse({ result: s3Response });
+    return formatSuccessResponse(s3Response);
   } catch (err) {
     return formatErrorResponse(err);
   }

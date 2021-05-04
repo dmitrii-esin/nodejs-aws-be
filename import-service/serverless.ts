@@ -41,7 +41,17 @@ const serverlessConfiguration: AWS = {
         statements: [
           {
             Effect: "Allow",
-            Action: "s3:ListBucket",
+            Action: ["s3:ListBucket"],
+            Resource: "${self:custom.s3BucketArn}",
+          },
+          {
+            Effect: "Allow",
+            Action: ["s3:PutObject"],
+            Resource: "${self:custom.s3BucketArn}",
+          },
+          {
+            Effect: "Allow",
+            Action: ["s3:DeleteObject"],
             Resource: "${self:custom.s3BucketArn}",
           },
           {
@@ -63,9 +73,6 @@ const serverlessConfiguration: AWS = {
             path: "import",
             cors: true,
             request: {
-              template: {
-                "application/json": '{ "name" : "$input.params(name)" }',
-              },
               parameters: {
                 querystrings: {
                   name: true,

@@ -9,7 +9,7 @@ import {
   formatSuccessResponse,
   formatErrorResponse,
 } from "@libs/apiResponseBuilder";
-import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
+import { CustomError } from "src/customError";
 
 export const importFileParser = async (
   event,
@@ -21,33 +21,61 @@ export const importFileParser = async (
   const BUCKET_NAME = process.env.BUCKET_NAME;
   const results = [];
 
+  const moveObject = async (
+    copyParams: S3.Types.CopyObjectRequest,
+    deleteParams: S3.Types.DeleteObjectRequest
+  ) => {
+    try {
+      await s3.copyObject(copyParams).promise();
+      await s3.deleteObject(deleteParams).promise();
+    } catch (error) {
+      const { code, message, stack } = error;
+
+      throw new CustomError({ code, message });
+    }
+  };
+
   const promises = event.Records.map((record) => {
-    const params: S3.Types.GetObjectRequest = {
-      Bucket: BUCKET_NAME,
-      Key: record.s3.object.key,
-    };
+    return new Promise((resolve, reject) => {
+      const getParams: S3.Types.GetObjectRequest = {
+        Bucket: BUCKET_NAME,
+        Key: record.s3.object.key,
+      };
 
-    const s3Stream: Readable = s3.getObject(params).createReadStream();
+      const s3Stream: Readable = s3.getObject(getParams).createReadStream();
 
-    s3Stream
-      .pipe(csv())
-      .on("data", (data) => {
-        results.push(data);
+      s3Stream
+        .pipe(csv())
+        .on("data", (data) => {
+          results.push(data);
+          winstonLogger.logRequest(`!!Handle data: ${JSON.stringify(data)}`);
+        })
+        .on("error", (err) => {
+          winstonLogger.logRequest(`!!Handle error: ${JSON.stringify(err)}`);
+          reject(err);
+        })
+        .on("end", async (end) => {
+          winstonLogger.logRequest(`!!Handle end: ${JSON.stringify(end)}`);
+          winstonLogger.logRequest(
+            `!!Handle end, results: ${JSON.stringify(results)}`
+          );
 
-        winstonLogger.logRequest(`!!Handle data: ${JSON.stringify(data)}`);
-      })
-      .on("error", (err) => {
-        winstonLogger.logRequest(`!!Handle error: ${JSON.stringify(err)}`);
+          const copyParams: S3.Types.CopyObjectRequest = {
+            Bucket: BUCKET_NAME,
+            CopySource: `${BUCKET_NAME}/parsed`,
+            Key: record.s3.object.key,
+          };
 
-        return formatSuccessResponse(
-          null,
-          statusCodesMap[STATUS_MESSAGES.SOMETHING_WENT_WRONG],
-          STATUS_MESSAGES.SOMETHING_WENT_WRONG
-        );
-      })
-      .on("end", (end) => {
-        winstonLogger.logRequest(`!!Handle end: ${JSON.stringify(end)}`);
-      });
+          const deleteParams: S3.Types.DeleteObjectRequest = {
+            Bucket: BUCKET_NAME,
+            Key: record.s3.object.key,
+          };
+
+          await moveObject(copyParams, deleteParams);
+
+          resolve(results);
+        });
+    });
   });
 
   try {
