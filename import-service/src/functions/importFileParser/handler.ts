@@ -24,7 +24,7 @@ export const importFileParser = async (
   const moveObject = async (
     copyParams: S3.Types.CopyObjectRequest,
     deleteParams: S3.Types.DeleteObjectRequest
-  ) => {
+  ): Promise<void> => {
     try {
       await s3.copyObject(copyParams).promise();
       await s3.deleteObject(deleteParams).promise();
@@ -56,14 +56,11 @@ export const importFileParser = async (
         })
         .on("end", async (end) => {
           winstonLogger.logRequest(`!!Handle end: ${JSON.stringify(end)}`);
-          winstonLogger.logRequest(
-            `!!Handle end, results: ${JSON.stringify(results)}`
-          );
 
           const copyParams: S3.Types.CopyObjectRequest = {
             Bucket: BUCKET_NAME,
-            CopySource: `${BUCKET_NAME}/parsed`,
-            Key: record.s3.object.key,
+            CopySource: `${BUCKET_NAME}/${record.s3.object.key}`,
+            Key: record.s3.object.key.replace("uploaded", "parsed"),
           };
 
           const deleteParams: S3.Types.DeleteObjectRequest = {
@@ -72,6 +69,10 @@ export const importFileParser = async (
           };
 
           await moveObject(copyParams, deleteParams);
+
+          winstonLogger.logRequest(
+            `!!Handle end, results: ${JSON.stringify(results)}`
+          );
 
           resolve(results);
         });
