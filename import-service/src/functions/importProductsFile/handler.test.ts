@@ -1,6 +1,10 @@
-import { Context, APIGatewayProxyEvent } from "aws-lambda";
+import { Context } from "aws-lambda";
+import * as AWSMock from "aws-sdk-mock";
+import * as AWS from "aws-sdk";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 import { importProductsFile } from "./handler";
+
+//TODO: fix
 
 const PARAMS = {
   event: {
@@ -117,8 +121,35 @@ const PARAMS = {
   callback: undefined,
 };
 
+beforeAll(async (done) => {
+  //get requires env vars
+  done();
+});
+
+beforeEach(() => {
+  AWSMock.setSDKInstance(AWS);
+
+  AWSMock.mock("S3", "getSignedUrlPromise", {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Methods": "*",
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: {
+      message: "SUCCESS",
+      data:
+        "https://csv-store-1.s3.eu-west-1.amazonaws.com/uploaded/superfile.csv?AWSAccessKeyId=AKIARP5C2HCUTA5FXTUD&Content-Type=text%2Fcsv&Expires=1620059807&Signature=HnC0FzgIK4KLaW%2FepAQ%2B7ECMzd4%3D",
+    },
+  });
+});
+
+afterEach(() => {
+  AWSMock.restore();
+});
+
 describe("lambda importProductsFile", () => {
-  it("lambda photoList runs corretly", async () => {
+  it("lambda runs corretly", async () => {
     const result = await importProductsFile(PARAMS.event, PARAMS.context);
 
     expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.SUCCESS]);

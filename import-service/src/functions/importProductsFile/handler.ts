@@ -1,8 +1,8 @@
 import "source-map-support/register";
 
 import { Context } from "aws-lambda";
-import S3 from "aws-sdk/clients/s3";
 import { ResponseType } from "src/types";
+import { importService } from "src/services/import-service";
 import { winstonLogger } from "@libs/winstonLogger";
 import {
   formatSuccessResponse,
@@ -26,29 +26,12 @@ export const importProductsFile = async (
     );
   }
 
-  const s3 = new S3({
-    region: "eu-west-1",
-    signatureVersion: "v4",
-  });
-  const BUCKET_NAME = process.env.BUCKET_NAME;
-  const catalogPath = `uploaded/${fileName}`;
-
-  const params = {
-    Bucket: BUCKET_NAME,
-    Key: catalogPath,
-    Expires: 60,
-    ContentType: "text/csv",
-    ACL: "public-read",
-  };
-
   try {
-    const s3Response = await s3.getSignedUrlPromise("putObject", params);
+    const response = await importService.generateSignedUrl(fileName);
 
-    winstonLogger.logRequest(
-      `!!importProductsFile: ${JSON.stringify(s3Response)}`
-    );
+    winstonLogger.logRequest(`!!response: ${JSON.stringify(response)}`);
 
-    return formatSuccessResponse(s3Response);
+    return formatSuccessResponse(response);
   } catch (err) {
     return formatErrorResponse(err);
   }
