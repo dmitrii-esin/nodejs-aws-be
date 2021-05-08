@@ -18,7 +18,6 @@ export const importService = {
       Key: catalogPath,
       Expires: 60,
       ContentType: "text/csv",
-      ACL: "public-read",
     };
 
     try {

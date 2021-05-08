@@ -36,32 +36,18 @@ const serverlessConfiguration: AWS = {
       ENV_STAGE: "${opt:stage, 'dev'}",
     },
     lambdaHashingVersion: "20201221",
-    iam: {
-      role: {
-        statements: [
-          {
-            Effect: "Allow",
-            Action: ["s3:ListBucket"],
-            Resource: "${self:custom.s3BucketArn}",
-          },
-          {
-            Effect: "Allow",
-            Action: ["s3:PutObject"],
-            Resource: "${self:custom.s3BucketArn}",
-          },
-          {
-            Effect: "Allow",
-            Action: ["s3:DeleteObject"],
-            Resource: "${self:custom.s3BucketArn}",
-          },
-          {
-            Effect: "Allow",
-            Action: ["s3:*"],
-            Resource: "${self:custom.s3BucketArn}" + "/*",
-          },
-        ],
+    iamRoleStatements: [
+      {
+        Effect: "Allow",
+        Action: "s3:ListBucket",
+        Resource: ["${self:custom.s3BucketArn}"],
       },
-    },
+      {
+        Effect: "Allow",
+        Action: "s3:*",
+        Resource: ["${self:custom.s3BucketArn}" + "/*"],
+      },
+    ],
   },
   functions: {
     importProductsFile: {
