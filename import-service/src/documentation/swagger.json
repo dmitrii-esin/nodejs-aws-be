@@ -1,0 +1,71 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "2021-05-08T16:35:40Z",
+    "title" : "import-service-dev"
+  },
+  "host" : "nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com",
+  "basePath" : "/dev",
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/import" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "x-amazon-apigateway-integration" : {
+          "type" : "aws_proxy",
+          "uri" : "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:102883801257:function:import-service-dev-importProductsFile/invocations",
+          "httpMethod" : "POST",
+          "passthroughBehavior" : "when_no_match"
+        }
+      },
+      "options" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Methods" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Headers" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "type" : "mock",
+          "responses" : {
+            "default" : {
+              "statusCode" : "200",
+              "responseParameters" : {
+                "method.response.header.Access-Control-Allow-Methods" : "'OPTIONS,GET'",
+                "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin" : "'*'"
+              },
+              "responseTemplates" : {
+                "application/json" : "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".+\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+              }
+            }
+          },
+          "requestTemplates" : {
+            "application/json" : "{statusCode:200}"
+          },
+          "passthroughBehavior" : "when_no_match",
+          "contentHandling" : "CONVERT_TO_TEXT"
+        }
+      }
+    }
+  },
+  "x-amazon-apigateway-minimum-compression-size" : 1024
+}

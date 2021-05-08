@@ -3,59 +3,62 @@ import S3 from "aws-sdk/clients/s3";
 import csv from "csv-parser";
 import { CustomError } from "src/customError";
 
-export const importService = {
-  generateSignedUrl: async (objectKey: string): Promise<string> => {
-    const s3 = new S3({
-      region: "eu-west-1",
-      signatureVersion: "v4",
-    });
+export class S3ManagementService {
+  private bucketName: string;
+  private s3: S3;
 
-    const BUCKET_NAME = process.env.BUCKET_NAME;
+  constructor(bucketName: string, s3: S3) {
+    this.bucketName = bucketName;
+    this.s3 = s3;
+  }
+
+  private async moveFile(
+    copyParams: S3.Types.CopyObjectRequest,
+    deleteParams: S3.Types.DeleteObjectRequest
+  ): Promise<void> {
+    try {
+      await this.s3.copyObject(copyParams).promise();
+      await this.s3.deleteObject(deleteParams).promise();
+    } catch (error) {
+      const { code, message, stack } = error;
+
+      throw new CustomError({ code, message });
+    }
+  }
+
+  async generateSignedUrl(objectKey: string): Promise<string> {
     const catalogPath = `uploaded/${objectKey}`;
 
     const params = {
-      Bucket: BUCKET_NAME,
+      Bucket: this.bucketName,
       Key: catalogPath,
       Expires: 60,
       ContentType: "text/csv",
     };
 
     try {
-      const s3Response = await s3.getSignedUrlPromise("putObject", params);
+      const s3Response = await this.s3.getSignedUrlPromise("putObject", params);
 
       return s3Response;
     } catch (error) {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });
     }
-  },
-  moveFiles: async (objectKeys: string[]) => {
-    const s3 = new S3({ region: "eu-west-1" });
-    const BUCKET_NAME = process.env.BUCKET_NAME;
+  }
+
+  async moveFiles(objectKeys: string[]): Promise<unknown[]> {
     const results = [];
-
-    const moveFile = async (
-      copyParams: S3.Types.CopyObjectRequest,
-      deleteParams: S3.Types.DeleteObjectRequest
-    ): Promise<void> => {
-      try {
-        await s3.copyObject(copyParams).promise();
-        await s3.deleteObject(deleteParams).promise();
-      } catch (error) {
-        const { code, message, stack } = error;
-
-        throw new CustomError({ code, message });
-      }
-    };
 
     const promises = objectKeys.map((objectKey) => {
       return new Promise((resolve, reject) => {
         const getParams: S3.Types.GetObjectRequest = {
-          Bucket: BUCKET_NAME,
+          Bucket: this.bucketName,
           Key: objectKey,
         };
 
-        const s3Stream: Readable = s3.getObject(getParams).createReadStream();
+        const s3Stream: Readable = this.s3
+          .getObject(getParams)
+          .createReadStream();
 
         s3Stream
           .pipe(csv())
@@ -67,17 +70,17 @@ export const importService = {
           })
           .on("end", async () => {
             const copyParams: S3.Types.CopyObjectRequest = {
-              Bucket: BUCKET_NAME,
-              CopySource: `${BUCKET_NAME}/${objectKey}`,
+              Bucket: this.bucketName,
+              CopySource: `${this.bucketName}/${objectKey}`,
               Key: objectKey.replace("uploaded", "parsed"),
             };
 
             const deleteParams: S3.Types.DeleteObjectRequest = {
-              Bucket: BUCKET_NAME,
+              Bucket: this.bucketName,
               Key: objectKey,
             };
 
-            await moveFile(copyParams, deleteParams);
+            await this.moveFile(copyParams, deleteParams);
 
             resolve(results);
           });
@@ -92,5 +95,10 @@ export const importService = {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });
     }
-  },
-};
+  }
+}
+
+export default new S3ManagementService(
+  process.env.BUCKET_NAME,
+  new S3({ region: "eu-west-1", signatureVersion: "v4" })
+);

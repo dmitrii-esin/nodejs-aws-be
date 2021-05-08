@@ -10,7 +10,7 @@
     "deploy:prod": "sls deploy --stage prod",
     "remove:dev-stack": "sls remove --stage dev",
     "remove:prod-stack": "sls remove --stage prod",
-    "documentation:generate": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id k3enib1dug --stage-name dev --export-type swagger ./src/documentation/swagger.json",
+    "documentation:generate": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id nr3xtj1l4g --stage-name dev --export-type swagger ./src/documentation/swagger.json",
     "documentation:open": "ts-node ./src/documentation/index.ts",
     "start:offline": "sls offline start --stage dev",
     "infra:kill": "sls remove"

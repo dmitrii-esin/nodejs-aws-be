@@ -9,9 +9,11 @@ const config: Config.InitialOptions = {
   // [...]
   // Replace `ts-jest` with the preset you want to use
   // from the above list
+  resetMocks: true,
   preset: "ts-jest",
   testEnvironment: "node",
   modulePaths: ["<rootDir>"],
+  setupFiles: ["<rootDir>/setEnvVars.js"],
   moduleNameMapper: pathsToModuleNameMapper(
     compilerOptions.paths /*, { prefix: '<rootDir>/' } */
   ),

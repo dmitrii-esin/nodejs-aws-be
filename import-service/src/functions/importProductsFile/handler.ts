@@ -1,8 +1,7 @@
 import "source-map-support/register";
 
-import { Context } from "aws-lambda";
 import { ResponseType } from "src/types";
-import { importService } from "src/services/import-service";
+import S3ManagementService from "src/services/s3-management-service";
 import { winstonLogger } from "@libs/winstonLogger";
 import {
   formatSuccessResponse,
@@ -12,7 +11,7 @@ import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 
 export const importProductsFile = async (
   event,
-  _context: Context
+  _context
 ): Promise<ResponseType> => {
   winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
@@ -27,7 +26,7 @@ export const importProductsFile = async (
   }
 
   try {
-    const response = await importService.generateSignedUrl(fileName);
+    const response = await S3ManagementService.generateSignedUrl(fileName);
 
     winstonLogger.logRequest(`!!response: ${JSON.stringify(response)}`);
 

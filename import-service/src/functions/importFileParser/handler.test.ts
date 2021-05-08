@@ -1,17 +1,37 @@
 import { Context } from "aws-lambda";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
+import S3ManagementService from "src/services/s3-management-service";
 import { importFileParser } from "./handler";
 
-//TODO: fix
-
 const PARAMS = {
-  event: {},
+  event: {
+    Records: [
+      {
+        s3: {
+          object: {
+            key: "https://test-url.com/uploaded",
+          },
+        },
+      },
+    ],
+  },
   context: {} as Context,
   callback: undefined,
 };
 
-describe("lambda importFileParser", () => {
-  it("lambda photoList runs corretly", async () => {
+describe("lambda importFileParser without S3ManagementService", () => {
+  beforeEach(() => {
+    S3ManagementService.moveFiles = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 200 }));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it("lambda runs corretly", async () => {
     const result = await importFileParser(PARAMS.event, PARAMS.context);
 
     expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.SUCCESS]);

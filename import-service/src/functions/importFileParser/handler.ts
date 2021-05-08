@@ -1,7 +1,7 @@
 import "source-map-support/register";
 
 import { ResponseType } from "src/types";
-import { importService } from "src/services/import-service";
+import S3ManagementService from "src/services/s3-management-service";
 import { winstonLogger } from "@libs/winstonLogger";
 import {
   formatSuccessResponse,
@@ -19,7 +19,7 @@ export const importFileParser = async (
   );
 
   try {
-    const response = await importService.moveFiles(objectKeys);
+    const response = await S3ManagementService.moveFiles(objectKeys);
 
     winstonLogger.logRequest(`!!response: ${JSON.stringify(response)}`);
 
