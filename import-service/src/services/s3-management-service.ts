@@ -3,7 +3,11 @@ import S3 from "aws-sdk/clients/s3";
 import csv from "csv-parser";
 import { CustomError } from "src/customError";
 
-export class S3ManagementService {
+interface S3ManagementServiceInterface {
+  generateSignedUrl: (objectKey: string) => Promise<string>;
+  moveFiles: (objectKeys: string[]) => Promise<unknown[]>;
+}
+export class S3ManagementService implements S3ManagementServiceInterface {
   private bucketName: string;
   private s3: S3;
 
