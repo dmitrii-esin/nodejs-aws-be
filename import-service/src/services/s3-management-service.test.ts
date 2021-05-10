@@ -31,7 +31,7 @@ describe("S3ManagementService", () => {
 
   it("generateSignedUrl runs correctly", async () => {
     const result = await s3ManagementService.generateSignedUrl("");
-    0;
+
     expect(result).toBe("signed-url");
   });
 
