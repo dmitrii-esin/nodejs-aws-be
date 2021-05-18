@@ -1,0 +1,12 @@
+{
+  "statusCode": 200,
+  "headers": {
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Origin": "*"
+  },
+  "body": {
+    "message": "SUCCESS",
+    "data": "https://csv-store-1.s3.eu-west-1.amazonaws.com/uploaded/superfile.csv?AWSAccessKeyId=AKIARP5C2HCUTA5FXTUD&Content-Type=text%2Fcsv&Expires=1620059807&Signature=HnC0FzgIK4KLaW%2FepAQ%2B7ECMzd4%3D"
+  }
+}

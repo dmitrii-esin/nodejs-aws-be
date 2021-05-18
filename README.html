@@ -91,6 +91,29 @@ Main:</p>
 <li>GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate</a></li>
 </ul>
 <p>frontend app link: <a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a></p>
+<h3 id="task5-import-to-s3">task5-import-to-s3</h3>
+<p>Main:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> 1 - Task 5.1 is implemented (importe-service created, importProductsFile implemented)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> 2 - TASK 5.2 is implemented (importFileParser implemented)</li>
+</ul>
+<p>Additional:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - async/await is used in lambda functions</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - importProductsFile lambda is covered by unit tests (aws-sdk-mock can be used to mock S3 methods - <a href="https://www.npmjs.com/package/aws-sdk-mock">https://www.npmjs.com/package/aws-sdk-mock</a>)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - At the end of the stream the lambda function should move the file from the uploaded folder into the parsed folder (move the file means that file should be copied into parsed folder, and then deleted from uploaded folder)</li>
+</ul>
+<p>endpoints:</p>
+<ul>
+<li>GET - <a href="https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import">https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import</a></li>
+</ul>
+<p>functions:</p>
+<ul>
+<li>importProductsFile: import-service-dev-importProductsFile</li>
+<li>importFileParser: import-service-dev-importFileParser</li>
+</ul>
+<p>frontend app link: <a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a><br>
+frontend repository PR link: <a href="https://github.com/dmitrii-esin/nodejs-aws-fe/pull/3">https://github.com/dmitrii-esin/nodejs-aws-fe/pull/3</a></p>
 
     </body>
     </html>
