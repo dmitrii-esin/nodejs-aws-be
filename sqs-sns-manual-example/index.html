@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invite users</title>
+</head>
+<body>
+  <h1>Invite users</h1>
+  <form id="users">
+    <div><input type="checkbox" name="users" value="111@kokoko.com">111</div>
+    <div><input type="checkbox" name="users" value="222@kokoko.com">222</div>
+    <div><input type="checkbox" name="users" value="333@kokoko.com">333</div>
+    <div><input type="checkbox" name="users" value="444@kokoko.com">444</div>
+    <div><input type="checkbox" name="users" value="555@kokoko.com">555</div>
+    <div><input type="checkbox" name="users" value="666@kokoko.com">666</div>
+    <input type="submit" value="Send invitations">
+  </form>
+  <script>
+    const ENDPOINT = "https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/users";
+
+    document.querySelector("#users").addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+
+      fetch(ENDPOINT, {
+        method: "POST",
+        body: JSON.stringify(
+          formData.getAll('users')
+        )
+      })
+    })
+  </script>
+</body>
+</html>
