@@ -87,28 +87,63 @@ const serverlessConfiguration: AWS = {
       },
     },
     lambdaHashingVersion: "20201221",
-    iam: {
-      role: {
-        statements: [
+    // iam: {
+    //   role: {
+    //     statements: [
+    //       {
+    //         Effect: "Allow",
+    //         Action: "sqs:*",
+    //         Resource: [
+    //           {
+    //             "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+    //           },
+    //         ],
+    //       },
+    //       {
+    //         Effect: "Allow",
+    //         Action: "sns:*",
+    //         Resource: {
+    //           Ref: "createProductTopic",
+    //         },
+    //       },
+
+    // {
+    //   Effect: "Allow",
+    //   Action: "sqs:*",
+    //   Resource: [
+    //     {
+    //       "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+    //     },
+    //   ],
+    // },
+    // {
+    //   Effect: "Allow",
+    //   Action: "sns:*",
+    //   Resource: {
+    //     Ref: "createProductTopic",
+    //   },
+    //     // },
+    //   ],
+    // },
+    iamRoleStatements: [
+      {
+        Effect: "Allow",
+        Action: "sqs:*",
+        Resource: [
           {
-            Effect: "Allow",
-            Action: "sqs:*",
-            Resource: [
-              {
-                "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
-              },
-            ],
-          },
-          {
-            Effect: "Allow",
-            Action: "sns:*",
-            Resource: {
-              Ref: "createProductTopic",
-            },
+            "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
           },
         ],
       },
-    },
+      {
+        Effect: "Allow",
+        Action: "sns:*",
+        Resource: {
+          Ref: "createProductTopic",
+        },
+      },
+    ],
+    // },
   },
   functions: {
     getAllProducts: {
