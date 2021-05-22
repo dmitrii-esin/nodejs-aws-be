@@ -37,4 +37,6 @@ export interface ProductServiceInterface {
       | "image"
     >
   ) => Promise<Product>;
+  //TODO:!!! type
+  catalogBatchProcess: (products: string[]) => Promise<any>;
 }

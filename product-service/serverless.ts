@@ -17,29 +17,49 @@ const serverlessConfiguration: AWS = {
   ],
   resources: {
     Resources: {
-      SQSQueue: {
+      catalogItemsQueue: {
         Type: "AWS::SQS::Queue",
         Properties: {
-          QueueName: "products-queue",
+          QueueName: "cvs-sqs",
         },
       },
-      SNSTopic: {
+      createProductTopic: {
         Type: "AWS::SNS::Topic",
         Properties: {
-          TopicName: "products-created",
+          TopicName: "notify-about-products",
         },
       },
-      SNSSubscription: {
+      SNSSubscriptionSuccess: {
         Type: "AWS::SNS::Subscription",
         Properties: {
           Endpoint: "dmitrii_esin@epam.com",
           Protocol: "email",
           TopicArn: {
-            Ref: "SNSTopic",
+            Ref: "createProductTopic",
           },
-          // FilterPolicy: {
-          //   success: ["true"],
-          // },
+          FilterPolicy: {
+            success: ["true"],
+          },
+        },
+      },
+      SNSSubscriptionSuccessFail: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          Endpoint: "dmitry.esin@gmail.com",
+          Protocol: "email",
+          TopicArn: {
+            Ref: "createProductTopic",
+          },
+          FilterPolicy: {
+            success: ["false"],
+          },
+        },
+      },
+    },
+    Outputs: {
+      SqsUrl: {
+        Value: {
+          Ref: "catalogItemsQueue",
         },
       },
     },
@@ -62,11 +82,8 @@ const serverlessConfiguration: AWS = {
       PGUSER: "${env:PGUSER, ''}",
       PGPASSWORD: "${env:PGPASSWORD, ''}",
       PGDATABASE: "${env:PGDATABASE, ''}",
-      SQS_URL: {
-        Ref: "SQSQueue",
-      },
       SNS_ARN: {
-        Ref: "SNSTopic",
+        Ref: "createProductTopic",
       },
     },
     lambdaHashingVersion: "20201221",
@@ -78,7 +95,7 @@ const serverlessConfiguration: AWS = {
             Action: "sqs:*",
             Resource: [
               {
-                "Fn::GetAtt": ["SQSQueue", "Arn"],
+                "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
               },
             ],
           },
@@ -86,7 +103,7 @@ const serverlessConfiguration: AWS = {
             Effect: "Allow",
             Action: "sns:*",
             Resource: {
-              Ref: "SNSTopic",
+              Ref: "createProductTopic",
             },
           },
         ],
@@ -155,31 +172,19 @@ const serverlessConfiguration: AWS = {
         },
       ],
     },
-    //   usersSubmit: {
-    //     handler: "handler.usersSubmit",
-    //     events: [
-    //       {
-    //         http: {
-    //           method: "post",
-    //           path: "users",
-    //           cors: true,
-    //         },
-    //       },
-    //     ],
-    //   },
-    //   usersInvite: {
-    //     handler: "handler.usersInvite",
-    //     events: [
-    //       {
-    //         sqs: {
-    //           batchSize: 2,
-    //           arn: {
-    //             "Fn::GetAtt": ["SQSQueue", "Arn"],
-    //           },
-    //         },
-    //       },
-    //     ],
-    //   },
+    catalogBatchProcess: {
+      handler: "handler.connectedCatalogBatchProcess",
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: {
+              "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+            },
+          },
+        },
+      ],
+    },
   },
 };
 

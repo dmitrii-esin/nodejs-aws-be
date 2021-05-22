@@ -1,11 +1,12 @@
 import { Client, QueryConfig } from "pg";
+import SNS from "aws-sdk/clients/sns";
 import { ProductServiceInterface, Product } from "src/types";
 import { CustomError } from "src/customError";
 
 class PostgresProductService implements ProductServiceInterface {
   private tableName = "products";
 
-  constructor(private databaseClient: Client) {}
+  constructor(private databaseClient: Client, private snsClient: SNS) {}
 
   async getProductById(id: string): Promise<Product> {
     try {
@@ -61,8 +62,50 @@ class PostgresProductService implements ProductServiceInterface {
           product.image,
         ],
       };
+
+      //TODO: type
       const result = await this.databaseClient.query(query);
+      console.log("!!servive postgres result", result);
+
+      //TODO: !!! createProducts -> отправить email об удачном сохранении продукта
+
       return result.rows[0] ? result.rows[0] : null;
+    } catch (error) {
+      const { code, message, stack } = error;
+      throw new CustomError({ code, message });
+    }
+  }
+
+  async catalogBatchProcess(products: string[]) {
+    try {
+      //TODO: type
+      let results = [];
+
+      console.log(
+        "!!catalogBatchProcess process.env.SNS_ARN",
+        process.env.SNS_ARN
+      );
+
+      for (const product in products) {
+        //TODO: type
+        // Create prodcust
+        // const result = await this.create(product);
+        // results.push(result);
+        // Send invitation
+        this.snsClient.publish(
+          {
+            Subject: "You are invited",
+            Message: JSON.stringify(product),
+            TopicArn: process.env.SNS_ARN,
+          },
+          (err, data) => {
+            console.log("!!err, data", err, data);
+            console.log("!!Send email for users: ", JSON.stringify(product));
+          }
+        );
+      }
+
+      return results;
     } catch (error) {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });

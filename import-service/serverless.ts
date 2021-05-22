@@ -34,6 +34,7 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       ENV_STAGE: "${opt:stage, 'dev'}",
+      SQS_URL: "${cf:product-service-dev.SqsUrl}",
     },
     lambdaHashingVersion: "20201221",
     iam: {

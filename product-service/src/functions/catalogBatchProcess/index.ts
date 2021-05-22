@@ -1,0 +1,1 @@
+export { catalogBatchProcess } from "./handler";

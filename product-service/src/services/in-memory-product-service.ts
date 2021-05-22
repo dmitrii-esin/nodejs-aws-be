@@ -45,6 +45,24 @@ class InMemoryProductService implements ProductServiceInterface {
       throw new CustomError({ code, message });
     }
   }
+
+  catalogBatchProcess(products: string[]) {
+    try {
+      //TODO: type
+      let results = [];
+
+      for (const product in products) {
+        //TODO: type
+        // const result = await this.create(product);
+        // results.push(result);
+      }
+
+      return Promise.resolve(results);
+    } catch (error) {
+      const { code, message, stack } = error;
+      throw new CustomError({ code, message });
+    }
+  }
 }
 
 export { InMemoryProductService };

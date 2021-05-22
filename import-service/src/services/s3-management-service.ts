@@ -1,19 +1,24 @@
 import { Readable } from "stream";
 import S3 from "aws-sdk/clients/s3";
+import SQS from "aws-sdk/clients/sqs";
 import csv from "csv-parser";
 import { CustomError } from "src/customError";
+import { Product } from "src/types";
 
 interface S3ManagementServiceInterface {
   generateSignedUrl: (objectKey: string) => Promise<string>;
-  moveFiles: (objectKeys: string[]) => Promise<unknown[]>;
+  moveFiles: (objectKeys: string[]) => Promise<Product[]>;
+  sendProductsToQueue: (products: any[]) => Promise<any[]>;
 }
 export class S3ManagementService implements S3ManagementServiceInterface {
   private bucketName: string;
   private s3: S3;
+  private sqsClient: SQS;
 
-  constructor(bucketName: string, s3: S3) {
+  constructor(bucketName: string, s3: S3, sqsClient: SQS) {
     this.bucketName = bucketName;
     this.s3 = s3;
+    this.sqsClient = sqsClient;
   }
 
   private async moveFile(
@@ -50,7 +55,43 @@ export class S3ManagementService implements S3ManagementServiceInterface {
     }
   }
 
-  async moveFiles(objectKeys: string[]): Promise<unknown[]> {
+  //TODO:!!! types
+  async sendProductsToQueue(products: Product[]): Promise<any> {
+    try {
+      //TODO:!!! types
+      let results: any[] = [];
+
+      products.forEach(async (product) => {
+        const result = await this.sqsClient
+          .sendMessage(
+            {
+              QueueUrl: process.env.SQS_URL,
+              MessageBody: JSON.stringify(product),
+            },
+            (err, data) => {
+              console.log("!!err, data", err, data);
+              console.log("!!Send message for user: ", product);
+            }
+          )
+          .promise();
+
+        results.push(result);
+      });
+      // callback(null, {
+      //   statusCode: 200,
+      //   headers: {
+      //     "Access-Control-Allow-Origin": "*",
+      //   },
+      // });
+
+      return results;
+    } catch (error) {
+      const { code, message, stack } = error;
+      throw new CustomError({ code, message });
+    }
+  }
+
+  async moveFiles(objectKeys: string[]): Promise<Product[]> {
     const results = [];
 
     const promises = objectKeys.map((objectKey) => {
@@ -67,6 +108,9 @@ export class S3ManagementService implements S3ManagementServiceInterface {
         s3Stream
           .pipe(csv())
           .on("data", (data) => {
+            console.log("!!s3Stream data", data);
+
+            //TODO: add validation for the products
             results.push(data);
           })
           .on("error", (err) => {
@@ -93,8 +137,7 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
     try {
       const results = await Promise.all(promises);
-
-      return results;
+      return results.flat() as Product[];
     } catch (error) {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });
@@ -104,5 +147,6 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
 export default new S3ManagementService(
   process.env.BUCKET_NAME,
-  new S3({ region: "eu-west-1", signatureVersion: "v4" })
+  new S3({ region: "eu-west-1", signatureVersion: "v4" }),
+  new SQS()
 );

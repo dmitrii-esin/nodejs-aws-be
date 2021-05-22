@@ -1,6 +1,7 @@
 import "source-map-support/register";
 
-import { ResponseType } from "src/types";
+import { ResponseType, Product } from "src/types";
+import { S3EventRecord, S3Event, Context } from "aws-lambda";
 import S3ManagementService from "src/services/s3-management-service";
 import { winstonLogger } from "@libs/winstonLogger";
 import {
@@ -9,21 +10,36 @@ import {
 } from "@libs/apiResponseBuilder";
 
 export const importFileParser = async (
-  event,
-  _context
+  event: S3Event,
+  _context: Context
 ): Promise<ResponseType> => {
   winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
   const objectKeys: string[] = event.Records.map(
-    (record) => record.s3.object.key
+    (record: S3EventRecord) => record.s3.object.key
   );
 
   try {
-    const response = await S3ManagementService.moveFiles(objectKeys);
+    const products: Product[] = await S3ManagementService.moveFiles(objectKeys);
 
-    winstonLogger.logRequest(`!!response: ${JSON.stringify(response)}`);
+    //TODO:!!!! types
+    const response2: any[] = await S3ManagementService.sendProductsToQueue(
+      products
+    );
 
-    return formatSuccessResponse(response);
+    winstonLogger.logRequest(`!!products: ${JSON.stringify(products)}`);
+    winstonLogger.logRequest(
+      `!!sendProductsToQueue response: ${JSON.stringify(response2)}`
+    );
+
+    //return {
+    //   statusCode: 200,
+    //   headers: {
+    //     "Access-Control-Allow-Origin": "*",
+    //   },
+    //}
+
+    return formatSuccessResponse(products);
   } catch (err) {
     return formatErrorResponse(err);
   }
