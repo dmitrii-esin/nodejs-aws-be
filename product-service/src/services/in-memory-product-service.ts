@@ -46,7 +46,7 @@ class InMemoryProductService implements ProductServiceInterface {
     }
   }
 
-  catalogBatchProcess(products: string[]) {
+  catalogBatchProcess(products: Product[]) {
     try {
       //TODO: type
       let results = [];

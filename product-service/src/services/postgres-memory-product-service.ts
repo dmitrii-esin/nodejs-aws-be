@@ -37,6 +37,7 @@ class PostgresProductService implements ProductServiceInterface {
     }
   }
 
+  //TODO: use transactions
   async create(
     product: Pick<
       Product,
@@ -74,7 +75,7 @@ class PostgresProductService implements ProductServiceInterface {
     }
   }
 
-  //TODO: decompose and move to another
+  //TODO: decompose and move to another service
   async catalogBatchProcess(products: Product[]) {
     //TODO: type
     let results = [];
@@ -85,6 +86,8 @@ class PostgresProductService implements ProductServiceInterface {
         // Create prodcust
         const createProductResult = await this.create(product);
         console.log("!!createProductResult", createProductResult);
+
+        //TODO: delete message from queue: https://medium.com/@brettandrews/handling-sqs-partial-batch-failures-in-aws-lambda-d9d6940a17aa
 
         // Send success invitation
         const result = await this.snsClient
@@ -102,6 +105,7 @@ class PostgresProductService implements ProductServiceInterface {
           .promise();
 
         results.push(result);
+        //TODO: check this case
       } catch (error) {
         // Send error invitation
         const result = await this.snsClient

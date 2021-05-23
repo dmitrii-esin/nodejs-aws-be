@@ -1,5 +1,6 @@
 import "source-map-support/register";
 
+import { APIGatewayEvent, Context } from "aws-lambda";
 import { Client } from "pg";
 import { winstonLogger } from "@libs/winstonLogger";
 import {
@@ -7,10 +8,11 @@ import {
   formatErrorResponse,
 } from "@libs/apiResponseBuilder";
 
-export const migrateSchema = (client: Client) => async (event, _context) => {
-  try {
-    await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
-    await client.query(`
+export const migrateSchema =
+  (client: Client) => async (event: APIGatewayEvent, _context: Context) => {
+    try {
+      await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+      await client.query(`
             CREATE TABLE IF NOT EXISTS products (
                 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
                 count INT,
@@ -23,9 +25,9 @@ export const migrateSchema = (client: Client) => async (event, _context) => {
             );
         `);
 
-    winstonLogger.logRequest(`!!migrateSchema`);
+      winstonLogger.logRequest(`!!migrateSchema`);
 
-    await client.query(`
+      await client.query(`
             INSERT INTO products (count, date, description, image, location, price, title) values
             (43, '2021-04-04T08:00:00.000Z', 'Sepultura, Crowbar, Sacred Reich, Art Of Shock', 'https://metal-tickets-store-pics-bucket.s3-eu-west-1.amazonaws.com/sepulturaquadratour.webp', '8001 S Eastern Ave, 73149 Oklahoma City Oklahoma, USA', 2.4, 'Sepultura - Quadra Tour 2021'),
             (198, '2021-04-02T08:00:00.000Z', 'Humanitys Last Breath', 'https://metal-tickets-store-pics-bucket.s3-eu-west-1.amazonaws.com/humanityslastbreathtour.webp', 'Stockholm Sodermanland, Sweden', 10, 'Humanitys Last Breath - Tour 2021'),
@@ -37,10 +39,10 @@ export const migrateSchema = (client: Client) => async (event, _context) => {
             (149, '2021-07-31T08:00:00.000Z', 'Slipknot, Amon Amarth, Pestilence, Neaera, etc.', 'https://metal-tickets-store-pics-bucket.s3-eu-west-1.amazonaws.com/wacken.webp', 'Hauptstraße 82, 25596 Wacken Schleswig-Holstein, Germany', 15, 'Wacken Open Air 2021'),
             (60, '2021-06-19T08:00:00.000Z', 'Faith No More, Deftones, Cro-Mags, Suicidal Tendencies, etc.', 'https://metal-tickets-store-pics-bucket.s3-eu-west-1.amazonaws.com/hellfest.webp', 'Route de la Dourie, 44190 Clisson, Pays de la Loire, France', 25, 'Hellfest 2022');
         `);
-    return formatSuccessResponse({});
-  } catch (err) {
-    return formatErrorResponse(err);
-  } finally {
-    client.end();
-  }
-};
+      return formatSuccessResponse({});
+    } catch (err) {
+      return formatErrorResponse(err);
+    } finally {
+      client.end();
+    }
+  };

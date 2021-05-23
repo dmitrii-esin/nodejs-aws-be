@@ -1,6 +1,5 @@
 import "source-map-support/register";
 
-import SNS from "aws-sdk/clients/sns";
 import { SQSRecord, SQSEvent, Context } from "aws-lambda";
 import {
   formatSuccessResponse,

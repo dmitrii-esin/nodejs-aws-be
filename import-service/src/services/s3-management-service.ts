@@ -95,10 +95,11 @@ export class S3ManagementService implements S3ManagementServiceInterface {
           .getObject(getParams)
           .createReadStream();
 
+        //TODO: use finished: https://github.com/EPAM-JS-Competency-center/shop-nodejs-aws-serverless/pull/6/files
         s3Stream
           .pipe(csv())
           .on("data", (data) => {
-            //TODO: add validation for the products
+            //TODO: add validation for the products: https://github.com/gultyaev/nodejs-aws-be/pull/4/files
             results.push(data);
           })
           .on("error", (err) => {

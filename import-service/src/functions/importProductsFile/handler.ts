@@ -1,5 +1,6 @@
 import "source-map-support/register";
 
+import { Context, APIGatewayEvent } from "aws-lambda";
 import { ResponseType } from "src/types";
 import S3ManagementService from "src/services/s3-management-service";
 import { winstonLogger } from "@libs/winstonLogger";
@@ -10,8 +11,8 @@ import {
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 
 export const importProductsFile = async (
-  event,
-  _context
+  event: APIGatewayEvent,
+  _context: Context
 ): Promise<ResponseType> => {
   winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
