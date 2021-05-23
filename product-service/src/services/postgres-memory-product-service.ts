@@ -67,8 +67,6 @@ class PostgresProductService implements ProductServiceInterface {
       const result = await this.databaseClient.query(query);
       console.log("!!servive postgres result", result);
 
-      //TODO: !!! createProducts -> отправить email об удачном сохранении продукта
-
       return result.rows[0] ? result.rows[0] : null;
     } catch (error) {
       const { code, message, stack } = error;
@@ -76,40 +74,59 @@ class PostgresProductService implements ProductServiceInterface {
     }
   }
 
-  async catalogBatchProcess(products: string[]) {
-    try {
-      //TODO: type
-      let results = [];
+  //TODO: decompose and move to another
+  async catalogBatchProcess(products: Product[]) {
+    //TODO: type
+    let results = [];
 
-      console.log(
-        "!!catalogBatchProcess process.env.SNS_ARN",
-        process.env.SNS_ARN
-      );
-
-      for (const product in products) {
+    for (const product of products) {
+      try {
         //TODO: type
         // Create prodcust
-        // const result = await this.create(product);
-        // results.push(result);
-        // Send invitation
-        this.snsClient.publish(
-          {
+        const createProductResult = await this.create(product);
+        console.log("!!createProductResult", createProductResult);
+
+        // Send success invitation
+        const result = await this.snsClient
+          .publish({
             Subject: "You are invited",
             Message: JSON.stringify(product),
             TopicArn: process.env.SNS_ARN,
-          },
-          (err, data) => {
-            console.log("!!err, data", err, data);
-            console.log("!!Send email for users: ", JSON.stringify(product));
-          }
-        );
-      }
+            MessageAttributes: {
+              status: {
+                DataType: "String",
+                StringValue: "success",
+              },
+            },
+          })
+          .promise();
 
-      return results;
-    } catch (error) {
-      const { code, message, stack } = error;
-      throw new CustomError({ code, message });
+        results.push(result);
+      } catch (error) {
+        // Send error invitation
+        const result = await this.snsClient
+          .publish({
+            Subject: "You are invited",
+            Message: JSON.stringify(product),
+            TopicArn: process.env.SNS_ARN,
+            MessageAttributes: {
+              status: {
+                DataType: "String",
+                StringValue: "failure",
+              },
+            },
+          })
+          .promise();
+
+        results.push(result);
+
+        //TODO: ???
+        // const { code, message, stack } = error;
+        // throw new CustomError({ code, message });
+      }
     }
+
+    return results;
   }
 }
 

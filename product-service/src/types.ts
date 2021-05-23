@@ -38,5 +38,5 @@ export interface ProductServiceInterface {
     >
   ) => Promise<Product>;
   //TODO:!!! type
-  catalogBatchProcess: (products: string[]) => Promise<any>;
+  catalogBatchProcess: (products: Product[]) => Promise<any>;
 }

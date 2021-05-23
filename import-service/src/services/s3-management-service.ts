@@ -55,34 +55,24 @@ export class S3ManagementService implements S3ManagementServiceInterface {
     }
   }
 
-  //TODO:!!! types
+  //TODO: types
+  //TODO: move to another service
   async sendProductsToQueue(products: Product[]): Promise<any> {
     try {
-      //TODO:!!! types
+      //TODO: types
       let results: any[] = [];
 
-      products.forEach(async (product) => {
+      for (const product of products) {
+        //TODO: types
         const result = await this.sqsClient
-          .sendMessage(
-            {
-              QueueUrl: process.env.SQS_URL,
-              MessageBody: JSON.stringify(product),
-            },
-            (err, data) => {
-              console.log("!!err, data", err, data);
-              console.log("!!Send message for user: ", product);
-            }
-          )
+          .sendMessage({
+            QueueUrl: process.env.SQS_URL,
+            MessageBody: JSON.stringify(product),
+          })
           .promise();
 
         results.push(result);
-      });
-      // callback(null, {
-      //   statusCode: 200,
-      //   headers: {
-      //     "Access-Control-Allow-Origin": "*",
-      //   },
-      // });
+      }
 
       return results;
     } catch (error) {
@@ -108,8 +98,6 @@ export class S3ManagementService implements S3ManagementServiceInterface {
         s3Stream
           .pipe(csv())
           .on("data", (data) => {
-            console.log("!!s3Stream data", data);
-
             //TODO: add validation for the products
             results.push(data);
           })
@@ -147,7 +135,7 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
 export default new S3ManagementService(
   process.env.BUCKET_NAME,
-  //TODO:!!! move to env vars
+  //TODO: move to env vars
   new S3({ region: "eu-west-1", signatureVersion: "v4" }),
   new SQS()
 );

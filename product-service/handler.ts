@@ -8,6 +8,7 @@ import { migrateSchema } from "@functions/migrateSchema";
 import { catalogBatchProcess } from "@functions/catalogBatchProcess";
 
 const databaseClient = new Client();
+//TODO:!!!! move to env vars
 const snsClient = new SNS({ region: "eu-west-1" });
 databaseClient.connect();
 const productService = new PostgresProductService(databaseClient, snsClient);

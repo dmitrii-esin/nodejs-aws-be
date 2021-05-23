@@ -22,7 +22,7 @@ export const importFileParser = async (
   try {
     const products: Product[] = await S3ManagementService.moveFiles(objectKeys);
 
-    //TODO:!!!! types
+    //TODO: types
     const response2: any[] = await S3ManagementService.sendProductsToQueue(
       products
     );
@@ -31,13 +31,6 @@ export const importFileParser = async (
     winstonLogger.logRequest(
       `!!sendProductsToQueue response: ${JSON.stringify(response2)}`
     );
-
-    //return {
-    //   statusCode: 200,
-    //   headers: {
-    //     "Access-Control-Allow-Origin": "*",
-    //   },
-    //}
 
     return formatSuccessResponse(products);
   } catch (err) {

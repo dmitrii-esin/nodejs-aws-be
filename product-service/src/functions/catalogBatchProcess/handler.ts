@@ -15,23 +15,14 @@ export const catalogBatchProcess =
     try {
       winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-      const products: string[] = event.Records.map(
-        (record: SQSRecord) => record.body
+      const products: Product[] = event.Records.map((record: SQSRecord) =>
+        JSON.parse(record.body)
       );
 
-      console.log("!!catalogBatchProcess lambda products", products);
-
-      //TODO:!!! type
-      const result = await productService.catalogBatchProcess(
-        // JSON.parse(products)
-        products
-      );
+      //TODO: type
+      const result = await productService.catalogBatchProcess(products);
 
       winstonLogger.logRequest(`!!Created products: ${JSON.stringify(result)}`);
-
-      // return {
-      //   statusCode: 202,
-      // };
 
       return formatSuccessResponse(result);
     } catch (err) {

@@ -33,19 +33,19 @@ const serverlessConfiguration: AWS = {
       SNSSubscriptionSuccess: {
         Type: "AWS::SNS::Subscription",
         Properties: {
-          //TODO:!! move to env vars
+          //TODO: move to env vars
           Endpoint: "dmitrii_esin@epam.com",
           Protocol: "email",
           TopicArn: {
             Ref: "createProductTopic",
           },
+          //TODO: move to env vars
           FilterPolicy: {
-            // status: ["failure"],
-            success: ["true"],
+            status: ["success"],
           },
         },
       },
-      SNSSubscriptionSuccessFail: {
+      SNSSubscriptionFailure: {
         Type: "AWS::SNS::Subscription",
         Properties: {
           Endpoint: "dmitry.esin@gmail.com",
@@ -53,9 +53,9 @@ const serverlessConfiguration: AWS = {
           TopicArn: {
             Ref: "createProductTopic",
           },
+          //TODO: move to env vars
           FilterPolicy: {
-            // status: ["success"],
-            success: ["false"],
+            status: ["failure"],
           },
         },
       },
