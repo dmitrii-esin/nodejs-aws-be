@@ -35,7 +35,8 @@ const serverlessConfiguration: AWS = {
       SNSSubscriptionSuccess: {
         Type: "AWS::SNS::Subscription",
         Properties: {
-          Endpoint: "${env:MAIL_SUBSCRIPTION_SUCCESS, ''}",
+          //TODO: move to env vars
+          Endpoint: "dmitrii_esin@epam.com",
           Protocol: "email",
           TopicArn: {
             Ref: "createProductTopic",
@@ -49,7 +50,8 @@ const serverlessConfiguration: AWS = {
       SNSSubscriptionFailure: {
         Type: "AWS::SNS::Subscription",
         Properties: {
-          Endpoint: "${env:MAIL_SUBSCRIPTION_FAILURE, ''}",
+          //TODO: move to env vars
+          Endpoint: "dmitry.esin@gmail.com",
           Protocol: "email",
           TopicArn: {
             Ref: "createProductTopic",
