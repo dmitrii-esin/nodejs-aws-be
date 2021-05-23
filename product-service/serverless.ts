@@ -4,7 +4,9 @@ const serverlessConfiguration: AWS = {
   service: "product-service",
   frameworkVersion: "2",
   custom: {
-    sqsArn: "arn:aws:sqs:eu-west-1:102883801257:cvs-sqs",
+    sqsArn: {
+      "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+    },
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
@@ -33,8 +35,7 @@ const serverlessConfiguration: AWS = {
       SNSSubscriptionSuccess: {
         Type: "AWS::SNS::Subscription",
         Properties: {
-          //TODO: move to env vars
-          Endpoint: "dmitrii_esin@epam.com",
+          Endpoint: "${env:MAIL_SUBSCRIPTION_SUCCESS, ''}",
           Protocol: "email",
           TopicArn: {
             Ref: "createProductTopic",
@@ -48,7 +49,7 @@ const serverlessConfiguration: AWS = {
       SNSSubscriptionFailure: {
         Type: "AWS::SNS::Subscription",
         Properties: {
-          Endpoint: "dmitry.esin@gmail.com",
+          Endpoint: "${env:MAIL_SUBSCRIPTION_FAILURE, ''}",
           Protocol: "email",
           TopicArn: {
             Ref: "createProductTopic",
