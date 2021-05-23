@@ -147,6 +147,7 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
 export default new S3ManagementService(
   process.env.BUCKET_NAME,
+  //TODO:!!! move to env vars
   new S3({ region: "eu-west-1", signatureVersion: "v4" }),
   new SQS()
 );

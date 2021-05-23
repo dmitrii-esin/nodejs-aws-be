@@ -4,6 +4,7 @@ const serverlessConfiguration: AWS = {
   service: "product-service",
   frameworkVersion: "2",
   custom: {
+    sqsArn: "arn:aws:sqs:eu-west-1:102883801257:cvs-sqs",
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
@@ -32,12 +33,14 @@ const serverlessConfiguration: AWS = {
       SNSSubscriptionSuccess: {
         Type: "AWS::SNS::Subscription",
         Properties: {
+          //TODO:!! move to env vars
           Endpoint: "dmitrii_esin@epam.com",
           Protocol: "email",
           TopicArn: {
             Ref: "createProductTopic",
           },
           FilterPolicy: {
+            // status: ["failure"],
             success: ["true"],
           },
         },
@@ -51,6 +54,7 @@ const serverlessConfiguration: AWS = {
             Ref: "createProductTopic",
           },
           FilterPolicy: {
+            // status: ["success"],
             success: ["false"],
           },
         },
@@ -60,6 +64,12 @@ const serverlessConfiguration: AWS = {
       SqsUrl: {
         Value: {
           Ref: "catalogItemsQueue",
+        },
+      },
+      SqsArn: {
+        Value: "${self:custom.sqsArn}",
+        Export: {
+          Name: "SqsArn",
         },
       },
     },
@@ -87,63 +97,28 @@ const serverlessConfiguration: AWS = {
       },
     },
     lambdaHashingVersion: "20201221",
-    // iam: {
-    //   role: {
-    //     statements: [
-    //       {
-    //         Effect: "Allow",
-    //         Action: "sqs:*",
-    //         Resource: [
-    //           {
-    //             "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         Effect: "Allow",
-    //         Action: "sns:*",
-    //         Resource: {
-    //           Ref: "createProductTopic",
-    //         },
-    //       },
-
-    // {
-    //   Effect: "Allow",
-    //   Action: "sqs:*",
-    //   Resource: [
-    //     {
-    //       "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
-    //     },
-    //   ],
-    // },
-    // {
-    //   Effect: "Allow",
-    //   Action: "sns:*",
-    //   Resource: {
-    //     Ref: "createProductTopic",
-    //   },
-    //     // },
-    //   ],
-    // },
-    iamRoleStatements: [
-      {
-        Effect: "Allow",
-        Action: "sqs:*",
-        Resource: [
+    iam: {
+      role: {
+        statements: [
           {
-            "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+            Effect: "Allow",
+            Action: "sqs:*",
+            Resource: [
+              {
+                "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+              },
+            ],
+          },
+          {
+            Effect: "Allow",
+            Action: "sns:*",
+            Resource: {
+              Ref: "createProductTopic",
+            },
           },
         ],
       },
-      {
-        Effect: "Allow",
-        Action: "sns:*",
-        Resource: {
-          Ref: "createProductTopic",
-        },
-      },
-    ],
-    // },
+    },
   },
   functions: {
     getAllProducts: {

@@ -50,6 +50,11 @@ const serverlessConfiguration: AWS = {
             Action: "s3:*",
             Resource: "${self:custom.s3BucketArn}" + "/*",
           },
+          {
+            Effect: "Allow",
+            Action: "sqs:SendMessage",
+            Resource: "${cf:product-service-dev.SqsArn}",
+          },
         ],
       },
     },
