@@ -10,11 +10,11 @@ export const checkProductDtoValidity = (
   const schema = Joi.object({
     count: Joi.number().required(),
     price: Joi.number().required(),
-    description: Joi.number().required(),
-    date: Joi.number().required(),
-    location: Joi.number().required(),
-    title: Joi.number().required(),
-    image: Joi.number().required(),
+    description: Joi.string().required(),
+    date: Joi.string().required(),
+    location: Joi.string().required(),
+    title: Joi.string().required(),
+    image: Joi.string().required(),
   });
 
   return schema.validate(product);
@@ -27,11 +27,11 @@ export const checkProductValidity = (
     id: Joi.string().required(),
     count: Joi.number().required(),
     price: Joi.number().required(),
-    description: Joi.number().required(),
-    date: Joi.number().required(),
-    location: Joi.number().required(),
-    title: Joi.number().required(),
-    image: Joi.number().required(),
+    description: Joi.string().required(),
+    date: Joi.string().required(),
+    location: Joi.string().required(),
+    title: Joi.string().required(),
+    image: Joi.string().required(),
   });
 
   return schema.validate(product);

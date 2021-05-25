@@ -2,7 +2,6 @@ import { Client, QueryConfig, QueryResult } from "pg";
 import { ProductServiceInterface, Product } from "src/types";
 import { checkProductDtoValidity } from "@libs/productValidator";
 import { CustomError } from "src/customError";
-import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 
 class PostgresProductService implements ProductServiceInterface {
   private tableName = "products";
@@ -51,15 +50,6 @@ class PostgresProductService implements ProductServiceInterface {
     >
   ): Promise<Product | null> {
     try {
-      const { error } = checkProductDtoValidity(product);
-
-      if (error) {
-        throw new CustomError({
-          code: statusCodesMap[STATUS_MESSAGES.BAD_REQUEST],
-          message: JSON.stringify(error),
-        });
-      }
-
       const query = {
         text: `INSERT INTO ${this.tableName}(count, description, date, location, price, title, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
         values: [
