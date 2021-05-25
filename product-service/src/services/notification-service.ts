@@ -11,30 +11,9 @@ class NotificationService implements NotificationServiceInterface {
 
     for (const createdProduct of createdProducts) {
       try {
-        checkProductValidity(createdProduct);
+        const { error } = checkProductValidity(createdProduct);
 
-        try {
-          const result = await this.snsClient
-            .publish({
-              Subject: "You are invited",
-              Message: JSON.stringify(createdProduct),
-              TopicArn: process.env.SNS_ARN,
-              MessageAttributes: {
-                status: {
-                  DataType: "String",
-                  StringValue: "success",
-                },
-              },
-            })
-            .promise();
-
-          results.push(result);
-        } catch (error) {
-          const { code, message, stack } = error;
-          throw new CustomError({ code, message });
-        }
-      } catch (error) {
-        try {
+        if (error) {
           const result = await this.snsClient
             .publish({
               Subject: "You are invited",
@@ -48,12 +27,28 @@ class NotificationService implements NotificationServiceInterface {
               },
             })
             .promise();
-
           results.push(result);
-        } catch (error) {
-          const { code, message, stack } = error;
-          throw new CustomError({ code, message });
         }
+
+        if (!error) {
+          const result = await this.snsClient
+            .publish({
+              Subject: "You are invited",
+              Message: JSON.stringify(createdProduct),
+              TopicArn: process.env.SNS_ARN,
+              MessageAttributes: {
+                status: {
+                  DataType: "String",
+                  StringValue: "success",
+                },
+              },
+            })
+            .promise();
+          results.push(result);
+        }
+      } catch (error) {
+        const { code, message, stack } = error;
+        throw new CustomError({ code, message });
       }
     }
 
