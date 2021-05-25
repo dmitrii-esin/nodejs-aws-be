@@ -1,6 +1,7 @@
 import { Context, S3Event } from "aws-lambda";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 import S3ManagementService from "src/services/s3-management-service";
+import SQSManagementService from "src/services/sqs-management-service";
 import { importFileParser } from "./handler";
 
 const PARAMS = {
@@ -19,13 +20,13 @@ const PARAMS = {
   callback: undefined,
 };
 
-describe("lambda importFileParser without S3ManagementService", () => {
+describe("lambda importFileParser without S3ManagementService and SQSManagementService", () => {
   beforeEach(() => {
     S3ManagementService.moveFiles = jest
       .fn()
       .mockImplementationOnce(() => Promise.resolve({ statusCode: 200 }));
 
-    S3ManagementService.sendProductsToQueue = jest
+    SQSManagementService.sendProductsToQueue = jest
       .fn()
       .mockImplementationOnce(() => Promise.resolve({ statusCode: 200 }));
   });

@@ -4,7 +4,7 @@ import { CustomError } from "src/customError";
 import { v4 as uuidv4 } from "uuid";
 
 class InMemoryProductService implements ProductServiceInterface {
-  getAllProducts() {
+  getAllProducts(): Promise<Product[]> {
     try {
       return Promise.resolve(products);
     } catch (error) {
@@ -13,7 +13,7 @@ class InMemoryProductService implements ProductServiceInterface {
     }
   }
 
-  getProductById(id: string) {
+  getProductById(id: string): Promise<Product> {
     try {
       return Promise.resolve(products.find((product) => product.id === id));
     } catch (error) {
@@ -22,7 +22,7 @@ class InMemoryProductService implements ProductServiceInterface {
     }
   }
 
-  create(
+  async create(
     product: Pick<
       Product,
       | "count"
@@ -33,7 +33,7 @@ class InMemoryProductService implements ProductServiceInterface {
       | "title"
       | "image"
     >
-  ) {
+  ): Promise<Product> {
     try {
       products.push({
         id: uuidv4(),
@@ -46,22 +46,20 @@ class InMemoryProductService implements ProductServiceInterface {
     }
   }
 
-  catalogBatchProcess(products: Product[]) {
-    try {
-      //TODO: type
-      let results = [];
+  async createBatch(products: Product[]): Promise<Product[]> {
+    let results: Product[] = [];
 
-      for (const product in products) {
-        //TODO: type
-        // const result = await this.create(product);
-        // results.push(result);
+    for (const product of products) {
+      try {
+        const createProductResult: Product = await this.create(product);
+        results.push(createProductResult);
+      } catch (error) {
+        const { code, message, stack } = error;
+        throw new CustomError({ code, message });
       }
-
-      return Promise.resolve(results);
-    } catch (error) {
-      const { code, message, stack } = error;
-      throw new CustomError({ code, message });
     }
+
+    return results;
   }
 }
 

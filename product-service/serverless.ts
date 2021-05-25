@@ -41,7 +41,6 @@ const serverlessConfiguration: AWS = {
           TopicArn: {
             Ref: "createProductTopic",
           },
-          //TODO: move to env vars
           FilterPolicy: {
             status: ["success"],
           },
@@ -56,7 +55,6 @@ const serverlessConfiguration: AWS = {
           TopicArn: {
             Ref: "createProductTopic",
           },
-          //TODO: move to env vars
           FilterPolicy: {
             status: ["failure"],
           },

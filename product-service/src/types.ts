@@ -1,3 +1,4 @@
+import SNS from "aws-sdk/clients/sns";
 import { statusCodesMap } from "src/constants";
 
 export type JSONPrimitive = string | number | boolean | null;
@@ -36,7 +37,10 @@ export interface ProductServiceInterface {
       | "title"
       | "image"
     >
-  ) => Promise<Product>;
-  //TODO:!!! type
-  catalogBatchProcess: (products: Product[]) => Promise<any>;
+  ) => Promise<Product | null>;
+  createBatch: (products: Product[]) => Promise<Product[]>;
+}
+
+export interface NotificationServiceInterface {
+  notify: (products: Product[]) => Promise<SNS.PublishResponse[]>;
 }

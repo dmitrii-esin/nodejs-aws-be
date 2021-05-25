@@ -16,7 +16,7 @@ export const importProductsFile = async (
 ): Promise<ResponseType> => {
   winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-  const fileName = event?.queryStringParameters?.name || "";
+  const fileName: string = event?.queryStringParameters?.name || "";
 
   if (!fileName) {
     return formatSuccessResponse(
@@ -27,11 +27,13 @@ export const importProductsFile = async (
   }
 
   try {
-    const response = await S3ManagementService.generateSignedUrl(fileName);
+    const signedUrl: string = await S3ManagementService.generateSignedUrl(
+      fileName
+    );
 
-    winstonLogger.logRequest(`!!response: ${JSON.stringify(response)}`);
+    winstonLogger.logRequest(`!!SignedUrl: ${JSON.stringify(signedUrl)}`);
 
-    return formatSuccessResponse(response);
+    return formatSuccessResponse(signedUrl);
   } catch (err) {
     return formatErrorResponse(err);
   }

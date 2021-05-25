@@ -30,7 +30,7 @@ const formatErrorResponse = (
 };
 
 const formatSuccessResponse = (
-  body: Object,
+  body: Object = null,
   statusCode: number = DEFAULT_SUCCESS_STATUS,
   message: string = STATUS_MESSAGES.SUCCESS
 ): ResponseType => {

@@ -1,12 +1,13 @@
-import { Client, QueryConfig } from "pg";
-import SNS from "aws-sdk/clients/sns";
+import { Client, QueryConfig, QueryResult } from "pg";
 import { ProductServiceInterface, Product } from "src/types";
+import { checkProductDtoValidity } from "@libs/productValidator";
 import { CustomError } from "src/customError";
+import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 
 class PostgresProductService implements ProductServiceInterface {
   private tableName = "products";
 
-  constructor(private databaseClient: Client, private snsClient: SNS) {}
+  constructor(private databaseClient: Client) {}
 
   async getProductById(id: string): Promise<Product> {
     try {
@@ -37,7 +38,6 @@ class PostgresProductService implements ProductServiceInterface {
     }
   }
 
-  //TODO: use transactions
   async create(
     product: Pick<
       Product,
@@ -49,8 +49,17 @@ class PostgresProductService implements ProductServiceInterface {
       | "title"
       | "image"
     >
-  ) {
+  ): Promise<Product | null> {
     try {
+      const { error } = checkProductDtoValidity(product);
+
+      if (error) {
+        throw new CustomError({
+          code: statusCodesMap[STATUS_MESSAGES.BAD_REQUEST],
+          message: JSON.stringify(error),
+        });
+      }
+
       const query = {
         text: `INSERT INTO ${this.tableName}(count, description, date, location, price, title, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
         values: [
@@ -64,9 +73,9 @@ class PostgresProductService implements ProductServiceInterface {
         ],
       };
 
-      //TODO: type
-      const result = await this.databaseClient.query(query);
-      console.log("!!servive postgres result", result);
+      const result: QueryResult<Product> = await this.databaseClient.query(
+        query
+      );
 
       return result.rows[0] ? result.rows[0] : null;
     } catch (error) {
@@ -75,58 +84,16 @@ class PostgresProductService implements ProductServiceInterface {
     }
   }
 
-  //TODO: decompose and move to another service
-  async catalogBatchProcess(products: Product[]) {
-    //TODO: type
-    let results = [];
+  async createBatch(products: Product[]): Promise<Product[]> {
+    let results: Product[] = [];
 
     for (const product of products) {
       try {
-        //TODO: type
-        // Create prodcust
-        const createProductResult = await this.create(product);
-        console.log("!!createProductResult", createProductResult);
-
-        //TODO: delete message from queue: https://medium.com/@brettandrews/handling-sqs-partial-batch-failures-in-aws-lambda-d9d6940a17aa
-
-        // Send success invitation
-        const result = await this.snsClient
-          .publish({
-            Subject: "You are invited",
-            Message: JSON.stringify(product),
-            TopicArn: process.env.SNS_ARN,
-            MessageAttributes: {
-              status: {
-                DataType: "String",
-                StringValue: "success",
-              },
-            },
-          })
-          .promise();
-
-        results.push(result);
-        //TODO: check this case
+        const createProductResult: Product = await this.create(product);
+        results.push(createProductResult);
       } catch (error) {
-        // Send error invitation
-        const result = await this.snsClient
-          .publish({
-            Subject: "You are invited",
-            Message: JSON.stringify(product),
-            TopicArn: process.env.SNS_ARN,
-            MessageAttributes: {
-              status: {
-                DataType: "String",
-                StringValue: "failure",
-              },
-            },
-          })
-          .promise();
-
-        results.push(result);
-
-        //TODO: ???
-        // const { code, message, stack } = error;
-        // throw new CustomError({ code, message });
+        const { code, message, stack } = error;
+        throw new CustomError({ code, message });
       }
     }
 

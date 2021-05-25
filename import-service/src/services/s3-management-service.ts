@@ -1,6 +1,5 @@
 import { Readable } from "stream";
 import S3 from "aws-sdk/clients/s3";
-import SQS from "aws-sdk/clients/sqs";
 import csv from "csv-parser";
 import { CustomError } from "src/customError";
 import { Product } from "src/types";
@@ -8,17 +7,14 @@ import { Product } from "src/types";
 interface S3ManagementServiceInterface {
   generateSignedUrl: (objectKey: string) => Promise<string>;
   moveFiles: (objectKeys: string[]) => Promise<Product[]>;
-  sendProductsToQueue: (products: any[]) => Promise<any[]>;
 }
 export class S3ManagementService implements S3ManagementServiceInterface {
   private bucketName: string;
   private s3: S3;
-  private sqsClient: SQS;
 
-  constructor(bucketName: string, s3: S3, sqsClient: SQS) {
+  constructor(bucketName: string, s3: S3) {
     this.bucketName = bucketName;
     this.s3 = s3;
-    this.sqsClient = sqsClient;
   }
 
   private async moveFile(
@@ -46,35 +42,12 @@ export class S3ManagementService implements S3ManagementServiceInterface {
     };
 
     try {
-      const s3Response = await this.s3.getSignedUrlPromise("putObject", params);
+      const s3Response: string = await this.s3.getSignedUrlPromise(
+        "putObject",
+        params
+      );
 
       return s3Response;
-    } catch (error) {
-      const { code, message, stack } = error;
-      throw new CustomError({ code, message });
-    }
-  }
-
-  //TODO: types
-  //TODO: move to another service
-  async sendProductsToQueue(products: Product[]): Promise<any> {
-    try {
-      //TODO: types
-      let results: any[] = [];
-
-      for (const product of products) {
-        //TODO: types
-        const result = await this.sqsClient
-          .sendMessage({
-            QueueUrl: process.env.SQS_URL,
-            MessageBody: JSON.stringify(product),
-          })
-          .promise();
-
-        results.push(result);
-      }
-
-      return results;
     } catch (error) {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });
@@ -95,11 +68,9 @@ export class S3ManagementService implements S3ManagementServiceInterface {
           .getObject(getParams)
           .createReadStream();
 
-        //TODO: use finished: https://github.com/EPAM-JS-Competency-center/shop-nodejs-aws-serverless/pull/6/files
         s3Stream
           .pipe(csv())
           .on("data", (data) => {
-            //TODO: add validation for the products: https://github.com/gultyaev/nodejs-aws-be/pull/4/files
             results.push(data);
           })
           .on("error", (err) => {
@@ -136,7 +107,5 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
 export default new S3ManagementService(
   process.env.BUCKET_NAME,
-  //TODO: move to env vars
-  new S3({ region: "eu-west-1", signatureVersion: "v4" }),
-  new SQS()
+  new S3({ region: process.env.REGION, signatureVersion: "v4" })
 );

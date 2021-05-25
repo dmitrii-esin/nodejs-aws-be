@@ -1,6 +1,8 @@
 import { Context } from "aws-lambda";
+import SNS from "aws-sdk/clients/sns";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 import { InMemoryProductService } from "src/services/in-memory-product-service";
+import { NotificationService } from "src/services/notification-service";
 import { catalogBatchProcess } from "./handler";
 
 const PARAMS = {
@@ -28,12 +30,31 @@ const PARAMS = {
   context: {} as Context,
 };
 
-describe("lambda createProduct", () => {
-  it("lambda createProduct runs corretly", async () => {
-    const productService = new InMemoryProductService();
-    const connectedCreateProduct = catalogBatchProcess(productService);
+describe("lambda catalogBatchProcess", () => {
+  const notificationService = new NotificationService({} as SNS);
+  const productService = new InMemoryProductService();
 
-    const result = await connectedCreateProduct(PARAMS.event, PARAMS.context);
+  beforeEach(() => {
+    notificationService.notify = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve({ statusCode: 200 }));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it("lambda runs corretly", async () => {
+    const connectedCatalogBatchProcess = catalogBatchProcess(
+      productService,
+      notificationService
+    );
+
+    const result = await connectedCatalogBatchProcess(
+      PARAMS.event,
+      PARAMS.context
+    );
 
     expect(result.statusCode).toBe(statusCodesMap[STATUS_MESSAGES.SUCCESS]);
   });
