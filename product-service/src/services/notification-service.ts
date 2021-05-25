@@ -11,26 +11,9 @@ class NotificationService implements NotificationServiceInterface {
 
     for (const createdProduct of createdProducts) {
       try {
-        const { error } = checkProductValidity(createdProduct);
+        checkProductValidity(createdProduct);
 
-        if (error) {
-          const result = await this.snsClient
-            .publish({
-              Subject: "You are invited",
-              Message: JSON.stringify(createdProduct),
-              TopicArn: process.env.SNS_ARN,
-              MessageAttributes: {
-                status: {
-                  DataType: "String",
-                  StringValue: "failure",
-                },
-              },
-            })
-            .promise();
-          results.push(result);
-        }
-
-        if (!error) {
+        try {
           const result = await this.snsClient
             .publish({
               Subject: "You are invited",
@@ -44,11 +27,33 @@ class NotificationService implements NotificationServiceInterface {
               },
             })
             .promise();
+
           results.push(result);
+        } catch (error) {
+          const { code, message, stack } = error;
+          throw new CustomError({ code, message });
         }
       } catch (error) {
-        const { code, message, stack } = error;
-        throw new CustomError({ code, message });
+        try {
+          const result = await this.snsClient
+            .publish({
+              Subject: "You are invited",
+              Message: JSON.stringify(createdProduct),
+              TopicArn: process.env.SNS_ARN,
+              MessageAttributes: {
+                status: {
+                  DataType: "String",
+                  StringValue: "failure",
+                },
+              },
+            })
+            .promise();
+
+          results.push(result);
+        } catch (error) {
+          const { code, message, stack } = error;
+          throw new CustomError({ code, message });
+        }
       }
     }
 
