@@ -1,12 +1,11 @@
-import { Context } from "aws-lambda";
+import { APIGatewayEvent, Context } from "aws-lambda";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 import { InMemoryProductService } from "src/services/in-memory-product-service";
 import { createProduct } from "./handler";
 
 const PARAMS = {
   event: {
-    body:
-      '{\r\n    "count": 17736884,\r\n    "date": "cillum aliquip minim",\r\n    "description": "Duis sunt",\r\n    "image": "aute sit minim",\r\n    "location": "in",\r\n    "price": 40831755,\r\n    "title": "adipisicing eu aliquip occaecat"\r\n}',
+    body: '{\r\n    "count": 17736884,\r\n    "date": "cillum aliquip minim",\r\n    "description": "Duis sunt",\r\n    "image": "aute sit minim",\r\n    "location": "in",\r\n    "price": 40831755,\r\n    "title": "adipisicing eu aliquip occaecat"\r\n}',
     headers: {
       "Content-Type": "application/json",
       "User-Agent": "PostmanRuntime/7.26.10",
@@ -70,7 +69,8 @@ const PARAMS = {
       stage: "dev",
     },
     resource: "/products",
-  },
+    stageVariables: null,
+  } as APIGatewayEvent,
   context: {
     awsRequestId: "cknugrm4j0002l8owh57583r2",
     callbackWaitsForEmptyEventLoop: true,

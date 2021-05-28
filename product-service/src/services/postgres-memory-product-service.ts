@@ -1,5 +1,6 @@
-import { Client, QueryConfig } from "pg";
+import { Client, QueryConfig, QueryResult } from "pg";
 import { ProductServiceInterface, Product } from "src/types";
+import { checkProductDtoValidity } from "@libs/productValidator";
 import { CustomError } from "src/customError";
 
 class PostgresProductService implements ProductServiceInterface {
@@ -47,7 +48,7 @@ class PostgresProductService implements ProductServiceInterface {
       | "title"
       | "image"
     >
-  ) {
+  ): Promise<Product | null> {
     try {
       const query = {
         text: `INSERT INTO ${this.tableName}(count, description, date, location, price, title, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
@@ -61,12 +62,32 @@ class PostgresProductService implements ProductServiceInterface {
           product.image,
         ],
       };
-      const result = await this.databaseClient.query(query);
+
+      const result: QueryResult<Product> = await this.databaseClient.query(
+        query
+      );
+
       return result.rows[0] ? result.rows[0] : null;
     } catch (error) {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });
     }
+  }
+
+  async createBatch(products: Product[]): Promise<Product[]> {
+    let results: Product[] = [];
+
+    for (const product of products) {
+      try {
+        const createProductResult: Product = await this.create(product);
+        results.push(createProductResult);
+      } catch (error) {
+        const { code, message, stack } = error;
+        throw new CustomError({ code, message });
+      }
+    }
+
+    return results;
   }
 }
 

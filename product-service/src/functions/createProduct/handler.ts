@@ -1,5 +1,6 @@
 import "source-map-support/register";
 
+import { APIGatewayEvent, Context } from "aws-lambda";
 import { Product, ProductServiceInterface, ResponseType } from "src/types";
 import { winstonLogger } from "@libs/winstonLogger";
 import {
@@ -7,20 +8,20 @@ import {
   formatErrorResponse,
 } from "@libs/apiResponseBuilder";
 
-export const createProduct = (
-  productService: ProductServiceInterface
-) => async (event, _context): Promise<ResponseType> => {
-  try {
-    winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
+export const createProduct =
+  (productService: ProductServiceInterface) =>
+  async (event: APIGatewayEvent, _context: Context): Promise<ResponseType> => {
+    try {
+      winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-    const product: Product = await productService.create(
-      JSON.parse(event.body)
-    );
+      const product: Product = await productService.create(
+        JSON.parse(event.body)
+      );
 
-    winstonLogger.logRequest(`!!Created product: ${JSON.stringify(product)}`);
+      winstonLogger.logRequest(`!!Created product: ${JSON.stringify(product)}`);
 
-    return formatSuccessResponse(product);
-  } catch (err) {
-    return formatErrorResponse(err);
-  }
-};
+      return formatSuccessResponse(product);
+    } catch (err) {
+      return formatErrorResponse(err);
+    }
+  };

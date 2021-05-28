@@ -114,6 +114,42 @@ Main:</p>
 </ul>
 <p>frontend app link: <a href="https://d12t0bvcb8pyyn.cloudfront.net">https://d12t0bvcb8pyyn.cloudfront.net</a><br>
 frontend repository PR link: <a href="https://github.com/dmitrii-esin/nodejs-aws-fe/pull/3">https://github.com/dmitrii-esin/nodejs-aws-fe/pull/3</a></p>
+<h3 id="task6-sqs-sns">task6-sqs-sns</h3>
+<p>Main:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> TASK 6.1 Create a lambda function called catalogBatchProcess in the resources section in serverless.yml.</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> TASK 6.2 Create a SQS queue, called catalogItemsQueue, configure the SQS to trigger lambda catalogBatchProcess and update the importFileParser lambda</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> TASK 6.3 Create an SNS topic createProductTopic and email subscription<br>
+Additional:</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - catalogBatchProcess lambda is covered by unit tests</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox">  +1 - set a Filter Policy for SNS createProductTopic in serverless.yml (Create an additional email subscription and distribute messages to different emails depending on the filter for any product attribute)</li>
+</ul>
+<p>Additional:</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - async/await is used in lambda functions</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - importProductsFile lambda is covered by unit tests (aws-sdk-mock can be used to mock S3 methods - <a href="https://www.npmjs.com/package/aws-sdk-mock">https://www.npmjs.com/package/aws-sdk-mock</a>)</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" checked="" disabled="" type="checkbox"> +1 - At the end of the stream the lambda function should move the file from the uploaded folder into the parsed folder (move the file means that file should be copied into parsed folder, and then deleted from uploaded folder)</li>
+</ul>
+<p>Frontend app link:<br>
+<a href="https://d12t0bvcb8pyyn.cloudfront.net/admin/products">https://d12t0bvcb8pyyn.cloudfront.net/admin/products</a></p>
+<p>import-service:<br>
+endpoints:<br>
+GET - <a href="https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import">https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import</a><br>
+functions:<br>
+importProductsFile: import-service-dev-importProductsFile<br>
+importFileParser: import-service-dev-importFileParser</p>
+<p>product-service:<br>
+endpoints:<br>
+GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a><br>
+GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/%7Bid%7D">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}</a><br>
+POST - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products</a><br>
+GET - <a href="https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate">https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate</a><br>
+functions:<br>
+getAllProducts: product-service-dev-getAllProducts<br>
+getProductById: product-service-dev-getProductById<br>
+createProductHandler: product-service-dev-createProductHandler<br>
+migrateSchema: product-service-dev-migrateSchema<br>
+catalogBatchProcess: product-service-dev-catalogBatchProcess</p>
 
     </body>
     </html>

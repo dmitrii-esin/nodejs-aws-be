@@ -88,3 +88,40 @@ functions:
 
 frontend app link: https://d12t0bvcb8pyyn.cloudfront.net
 frontend repository PR link: https://github.com/dmitrii-esin/nodejs-aws-fe/pull/3
+
+ ### task6-sqs-sns
+ Main:
+ - [x] TASK 6.1 Create a lambda function called catalogBatchProcess in the resources section in serverless.yml.
+ - [x] TASK 6.2 Create a SQS queue, called catalogItemsQueue, configure the SQS to trigger lambda catalogBatchProcess and update the importFileParser lambda
+- [x] TASK 6.3 Create an SNS topic createProductTopic and email subscription
+Additional:
+- [x] +1 - catalogBatchProcess lambda is covered by unit tests
+- [x]  +1 - set a Filter Policy for SNS createProductTopic in serverless.yml (Create an additional email subscription and distribute messages to different emails depending on the filter for any product attribute)
+
+Additional:
+- [x] +1 - async/await is used in lambda functions
+- [x] +1 - importProductsFile lambda is covered by unit tests (aws-sdk-mock can be used to mock S3 methods - https://www.npmjs.com/package/aws-sdk-mock)
+- [x] +1 - At the end of the stream the lambda function should move the file from the uploaded folder into the parsed folder (move the file means that file should be copied into parsed folder, and then deleted from uploaded folder)
+
+Frontend app link:
+https://d12t0bvcb8pyyn.cloudfront.net/admin/products
+
+import-service:
+endpoints:
+GET - https://nr3xtj1l4g.execute-api.eu-west-1.amazonaws.com/dev/import
+functions:
+importProductsFile: import-service-dev-importProductsFile
+importFileParser: import-service-dev-importFileParser
+
+product-service:
+endpoints:
+GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products
+GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products/{id}
+POST - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/products
+GET - https://ie2svy46v9.execute-api.eu-west-1.amazonaws.com/dev/migrate
+functions:
+getAllProducts: product-service-dev-getAllProducts
+getProductById: product-service-dev-getProductById
+createProductHandler: product-service-dev-createProductHandler
+migrateSchema: product-service-dev-migrateSchema
+catalogBatchProcess: product-service-dev-catalogBatchProcess

@@ -34,6 +34,7 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       ENV_STAGE: "${opt:stage, 'dev'}",
+      SQS_URL: "${cf:product-service-dev.SqsUrl}",
     },
     lambdaHashingVersion: "20201221",
     iam: {
@@ -48,6 +49,11 @@ const serverlessConfiguration: AWS = {
             Effect: "Allow",
             Action: "s3:*",
             Resource: "${self:custom.s3BucketArn}" + "/*",
+          },
+          {
+            Effect: "Allow",
+            Action: "sqs:SendMessage",
+            Resource: "${cf:product-service-dev.SqsArn}",
           },
         ],
       },

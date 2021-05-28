@@ -1,10 +1,10 @@
-import { Context } from "aws-lambda";
+import { Context, APIGatewayEvent } from "aws-lambda";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 import { InMemoryProductService } from "src/services/in-memory-product-service";
 import { getAllProducts } from "./handler";
 
 const PARAMS = {
-  event: {},
+  event: {} as APIGatewayEvent,
   context: {
     awsRequestId: "9e8a207c-1f99-4b9b-a413-02beb6250895",
     invokeid: "id",

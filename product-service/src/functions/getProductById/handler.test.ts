@@ -1,4 +1,4 @@
-import { Context } from "aws-lambda";
+import { APIGatewayEvent, Context } from "aws-lambda";
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 import { InMemoryProductService } from "src/services/in-memory-product-service";
 import { getProductById } from "./handler";
@@ -43,21 +43,95 @@ const PARAMS = {
   callback: undefined,
 };
 
+const BASE_EVENT = {
+  event: {
+    body: "",
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": "PostmanRuntime/7.26.10",
+      Accept: "*/*",
+      "Cache-Control": "no-cache",
+      "Postman-Token": "",
+      Host: "localhost:3000",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+      "Content-Length": "225",
+    },
+    httpMethod: "",
+    isBase64Encoded: false,
+    multiValueHeaders: {
+      "Content-Type": ["application/json"],
+      "User-Agent": ["PostmanRuntime/7.26.10"],
+      Accept: ["*/*"],
+      "Cache-Control": ["no-cache"],
+      "Postman-Token": [""],
+      Host: ["localhost:3000"],
+      "Accept-Encoding": ["gzip, deflate, br"],
+      Connection: ["keep-alive"],
+      "Content-Length": ["225"],
+    },
+    multiValueQueryStringParameters: null,
+    path: "/products",
+    pathParameters: null,
+    queryStringParameters: null,
+    requestContext: {
+      accountId: "offlineContext_accountId",
+      apiId: "offlineContext_apiId",
+      authorizer: { principalId: "offlineContext_authorizer_principalId" },
+      domainName: "offlineContext_domainName",
+      domainPrefix: "offlineContext_domainPrefix",
+      extendedRequestId: "cknugrm4g0000l8ow6amm19kr",
+      httpMethod: "",
+      identity: {
+        accessKey: null,
+        accountId: "offlineContext_accountId",
+        apiKey: "offlineContext_apiKey",
+        apiKeyId: "offlineContext_apiKeyId",
+        caller: "offlineContext_caller",
+        cognitoAuthenticationProvider:
+          "offlineContext_cognitoAuthenticationProvider",
+        cognitoAuthenticationType: "offlineContext_cognitoAuthenticationType",
+        cognitoIdentityId: "offlineContext_cognitoIdentityId",
+        cognitoIdentityPoolId: "offlineContext_cognitoIdentityPoolId",
+        principalOrgId: null,
+        sourceIp: "127.0.0.1",
+        user: "offlineContext_user",
+        userAgent: "PostmanRuntime/7.26.10",
+        userArn: "offlineContext_userArn",
+      },
+      path: "/products",
+      protocol: "HTTP/1.1",
+      requestId: "cknugrm4g0001l8ow5jk0fb42",
+      requestTime: "23/Apr/2021:18:23:43 +0300",
+      requestTimeEpoch: 1619191423144,
+      resourceId: "offlineContext_resourceId",
+      resourcePath: "/dev/products",
+      stage: "dev",
+    },
+    resource: "/products",
+    stageVariables: null,
+  } as APIGatewayEvent,
+};
+
 const PARAMS_WITH_CORRECT_PRODUCT_ID = {
   ...PARAMS,
   event: {
+    ...BASE_EVENT.event,
     pathParameters: { id: "7567ec4b-b10c-48c5-9345-fc73c48a80aa" },
-  },
+  } as APIGatewayEvent,
 };
 
 const PARAMS_WITH_NON_EXISTENT_PRODUCT_ID = {
   ...PARAMS,
-  event: { pathParameters: { id: "123" } },
+  event: {
+    ...BASE_EVENT.event,
+    pathParameters: { id: "123" },
+  } as APIGatewayEvent,
 };
 
 const PARAMS_WITHOUT_PRODUCT_ID = {
   ...PARAMS,
-  event: { pathParameters: { id: "" } },
+  event: { ...BASE_EVENT.event, pathParameters: { id: "" } } as APIGatewayEvent,
 };
 
 describe("lambda getProductById", () => {

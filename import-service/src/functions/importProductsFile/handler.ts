@@ -1,5 +1,6 @@
 import "source-map-support/register";
 
+import { Context, APIGatewayEvent } from "aws-lambda";
 import { ResponseType } from "src/types";
 import S3ManagementService from "src/services/s3-management-service";
 import { winstonLogger } from "@libs/winstonLogger";
@@ -10,12 +11,12 @@ import {
 import { statusCodesMap, STATUS_MESSAGES } from "src/constants";
 
 export const importProductsFile = async (
-  event,
-  _context
+  event: APIGatewayEvent,
+  _context: Context
 ): Promise<ResponseType> => {
   winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-  const fileName = event?.queryStringParameters?.name || "";
+  const fileName: string = event?.queryStringParameters?.name || "";
 
   if (!fileName) {
     return formatSuccessResponse(
@@ -26,11 +27,13 @@ export const importProductsFile = async (
   }
 
   try {
-    const response = await S3ManagementService.generateSignedUrl(fileName);
+    const signedUrl: string = await S3ManagementService.generateSignedUrl(
+      fileName
+    );
 
-    winstonLogger.logRequest(`!!response: ${JSON.stringify(response)}`);
+    winstonLogger.logRequest(`!!SignedUrl: ${JSON.stringify(signedUrl)}`);
 
-    return formatSuccessResponse(response);
+    return formatSuccessResponse(signedUrl);
   } catch (err) {
     return formatErrorResponse(err);
   }

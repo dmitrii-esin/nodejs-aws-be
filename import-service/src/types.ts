@@ -10,3 +10,14 @@ export type ResponseType = {
   headers: Object;
   body: Object;
 };
+
+export interface Product {
+  id: string;
+  count: number;
+  description: string;
+  date: string;
+  location: string;
+  price: number;
+  title: string;
+  image: string;
+}

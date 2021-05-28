@@ -4,6 +4,9 @@ const serverlessConfiguration: AWS = {
   service: "product-service",
   frameworkVersion: "2",
   custom: {
+    sqsArn: {
+      "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+    },
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
@@ -15,35 +18,63 @@ const serverlessConfiguration: AWS = {
     "serverless-s3-remover",
     "serverless-dotenv-plugin",
   ],
-  // resources: {
-  //   Resources: {
-  //     SQSQueue: {
-  //       Type: "AWS::SQS::Queue",
-  //       Properties: {
-  //         QueueName: "products-queue",
-  //       },
-  //     },
-  //     SNSTopic: {
-  //       Type: "AWS::SNS::Topic",
-  //       Properties: {
-  //         TopicName: "products-created",
-  //       },
-  //     },
-  //     SNSSubscription: {
-  //       Type: "AWS::SNS::Subscription",
-  //       Properties: {
-  //         Endpoint: "dmitrii_esin@epam.com",
-  //         Protocol: "email",
-  //         TopicArn: {
-  //           Ref: "SNSTopic",
-  //         },
-  //         // FilterPolicy: {
-  //         //   success: ["true"],
-  //         // },
-  //       },
-  //     },
-  //   },
-  // },
+  resources: {
+    Resources: {
+      catalogItemsQueue: {
+        Type: "AWS::SQS::Queue",
+        Properties: {
+          QueueName: "cvs-sqs",
+        },
+      },
+      createProductTopic: {
+        Type: "AWS::SNS::Topic",
+        Properties: {
+          TopicName: "notify-about-products",
+        },
+      },
+      SNSSubscriptionSuccess: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          //TODO: move to env vars
+          Endpoint: "dmitrii_esin@epam.com",
+          Protocol: "email",
+          TopicArn: {
+            Ref: "createProductTopic",
+          },
+          FilterPolicy: {
+            status: ["success"],
+          },
+        },
+      },
+      SNSSubscriptionFailure: {
+        Type: "AWS::SNS::Subscription",
+        Properties: {
+          //TODO: move to env vars
+          Endpoint: "dmitry.esin@gmail.com",
+          Protocol: "email",
+          TopicArn: {
+            Ref: "createProductTopic",
+          },
+          FilterPolicy: {
+            status: ["failure"],
+          },
+        },
+      },
+    },
+    Outputs: {
+      SqsUrl: {
+        Value: {
+          Ref: "catalogItemsQueue",
+        },
+      },
+      SqsArn: {
+        Value: "${self:custom.sqsArn}",
+        Export: {
+          Name: "SqsArn",
+        },
+      },
+    },
+  },
   provider: {
     name: "aws",
     runtime: "nodejs14.x",
@@ -62,36 +93,33 @@ const serverlessConfiguration: AWS = {
       PGUSER: "${env:PGUSER, ''}",
       PGPASSWORD: "${env:PGPASSWORD, ''}",
       PGDATABASE: "${env:PGDATABASE, ''}",
-      // SQS_URL: {
-      //   Ref: "SQSQueue",
-      // },
-      // SNS_ARN: {
-      //   Ref: "SNSTopic",
-      // },
+      SNS_ARN: {
+        Ref: "createProductTopic",
+      },
     },
     lambdaHashingVersion: "20201221",
-    // iam: {
-    //   role: {
-    //     statements: [
-    //       {
-    //         Effect: "Allow",
-    //         Action: "sqs:*",
-    //         Resource: [
-    //           {
-    //             "Fn::GetAtt": ["SQSQueue", "Arn"],
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         Effect: "Allow",
-    //         Action: "sns:*",
-    //         Resource: {
-    //           Ref: "SNSTopic",
-    //         },
-    //       },
-    //     ],
-    //   },
-    // },
+    iam: {
+      role: {
+        statements: [
+          {
+            Effect: "Allow",
+            Action: "sqs:*",
+            Resource: [
+              {
+                "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+              },
+            ],
+          },
+          {
+            Effect: "Allow",
+            Action: "sns:*",
+            Resource: {
+              Ref: "createProductTopic",
+            },
+          },
+        ],
+      },
+    },
   },
   functions: {
     getAllProducts: {
@@ -155,31 +183,19 @@ const serverlessConfiguration: AWS = {
         },
       ],
     },
-    // usersSubmit: {
-    //   handler: "handler.usersSubmit",
-    //   events: [
-    //     {
-    //       http: {
-    //         method: "post",
-    //         path: "users",
-    //         cors: true,
-    //       },
-    //     },
-    //   ],
-    // },
-    // usersInvite: {
-    //   handler: "handler.usersInvite",
-    //   events: [
-    //     {
-    //       sqs: {
-    //         batchSize: 2,
-    //         arn: {
-    //           "Fn::GetAtt": ["SQSQueue", "Arn"],
-    //         },
-    //       },
-    //     },
-    //   ],
-    // },
+    catalogBatchProcess: {
+      handler: "handler.connectedCatalogBatchProcess",
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: {
+              "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
+            },
+          },
+        },
+      ],
+    },
   },
 };
 

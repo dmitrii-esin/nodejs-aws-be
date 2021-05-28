@@ -2,10 +2,11 @@ import { Readable } from "stream";
 import S3 from "aws-sdk/clients/s3";
 import csv from "csv-parser";
 import { CustomError } from "src/customError";
+import { Product } from "src/types";
 
 interface S3ManagementServiceInterface {
   generateSignedUrl: (objectKey: string) => Promise<string>;
-  moveFiles: (objectKeys: string[]) => Promise<unknown[]>;
+  moveFiles: (objectKeys: string[]) => Promise<Product[]>;
 }
 export class S3ManagementService implements S3ManagementServiceInterface {
   private bucketName: string;
@@ -41,7 +42,10 @@ export class S3ManagementService implements S3ManagementServiceInterface {
     };
 
     try {
-      const s3Response = await this.s3.getSignedUrlPromise("putObject", params);
+      const s3Response: string = await this.s3.getSignedUrlPromise(
+        "putObject",
+        params
+      );
 
       return s3Response;
     } catch (error) {
@@ -50,7 +54,7 @@ export class S3ManagementService implements S3ManagementServiceInterface {
     }
   }
 
-  async moveFiles(objectKeys: string[]): Promise<unknown[]> {
+  async moveFiles(objectKeys: string[]): Promise<Product[]> {
     const results = [];
 
     const promises = objectKeys.map((objectKey) => {
@@ -93,8 +97,7 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
     try {
       const results = await Promise.all(promises);
-
-      return results;
+      return results.flat() as Product[];
     } catch (error) {
       const { code, message, stack } = error;
       throw new CustomError({ code, message });
@@ -104,5 +107,5 @@ export class S3ManagementService implements S3ManagementServiceInterface {
 
 export default new S3ManagementService(
   process.env.BUCKET_NAME,
-  new S3({ region: "eu-west-1", signatureVersion: "v4" })
+  new S3({ region: process.env.REGION, signatureVersion: "v4" })
 );
