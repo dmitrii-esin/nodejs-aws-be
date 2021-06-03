@@ -55,7 +55,7 @@ const serverlessConfiguration: AWS = {
             Action: "sqs:SendMessage",
             Resource: "${cf:product-service-dev.SqsArn}",
           },
-        ],
+        ],``
       },
     },
   },
@@ -74,6 +74,13 @@ const serverlessConfiguration: AWS = {
                   name: true,
                 },
               },
+            },
+            authorizer: {
+              arn: "${cf:authrorization-dev.basicAuthorizer}",
+              managedExternally: false,
+              resultTtlInSeconds: 0,
+              identitySource: "method.request.header.Authorization",
+              // type: "request"
             },
           },
         },
