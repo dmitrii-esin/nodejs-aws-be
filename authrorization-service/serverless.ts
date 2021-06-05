@@ -4,9 +4,7 @@ const serverlessConfiguration: AWS = {
   service: "authrorization-service",
   frameworkVersion: "2",
   custom: {
-    basicAuthorizer: {
-      "Fn::GetAtt": ["basicAuthorizer", "Arn"],
-    },
+    basicAuthorizer: "${self:functions.basicAuthorizer}",
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
@@ -32,28 +30,6 @@ const serverlessConfiguration: AWS = {
       ENV_STAGE: "${opt:stage, 'dev'}",
     },
     lambdaHashingVersion: "20201221",
-    // iam: {
-    //   role: {
-    //     statements: [
-    //       {
-    //         Effect: "Allow",
-    //         Action: "sqs:*",
-    //         Resource: [
-    //           {
-    //             "Fn::GetAtt": ["catalogItemsQueue", "Arn"],
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         Effect: "Allow",
-    //         Action: "sns:*",
-    //         Resource: {
-    //           Ref: "createProductTopic",
-    //         },
-    //       },
-    //     ],
-    //   },`
-    // },
   },
   resources: {
     Outputs: {
@@ -68,21 +44,7 @@ const serverlessConfiguration: AWS = {
   functions: {
     basicAuthorizer: {
       handler: "handler.basicAuthorizer",
-      // events: [
-      //   {
-      //     http: {
-      //       method: "post",
-      //       path: "products",
-      //       cors: true,
-      //       request: {
-      //         schema: {
-      //           "application/json":
-      //             "${file(src/schemas/createProductSchema.json)}",
-      //         },
-      //       },
-      //     },
-      //   },
-      // ],
+      name: "basicAuthorizer",
     },
   },
 };
