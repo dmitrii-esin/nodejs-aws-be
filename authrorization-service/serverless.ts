@@ -30,7 +30,6 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       ENV_STAGE: "${opt:stage, 'dev'}",
-      PASSWORD: "${env:dmitrii-esin, ''}",
     },
     lambdaHashingVersion: "20201221",
     // iam: {

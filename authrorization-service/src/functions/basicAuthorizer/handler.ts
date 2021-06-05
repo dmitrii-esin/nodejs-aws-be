@@ -1,6 +1,13 @@
 import "source-map-support/register";
 
-import { APIGatewayEvent, Context } from "aws-lambda";
+import {
+  APIGatewayAuthorizerCallback,
+  APIGatewayRequestAuthorizerEvent,
+  APIGatewayAuthorizerResult,
+  APIGatewayAuthorizerResultContext,
+  PolicyDocument,
+  APIGatewayEventRequestContext,
+} from "aws-lambda";
 import {
   formatSuccessResponse,
   formatErrorResponse,
@@ -9,22 +16,57 @@ import { winstonLogger } from "@libs/winstonLogger";
 import { ResponseType } from "src/types";
 
 export const basicAuthorizer = async (
-  event: APIGatewayEvent,
-  _context: Context
-): Promise<ResponseType> => {
+  event: APIGatewayRequestAuthorizerEvent,
+  _context: APIGatewayEventRequestContext,
+  cb: APIGatewayAuthorizerCallback
+  // ): Promise<APIGatewayAuthorizerResult> => {
+): Promise<void> => {
+  winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
+
+  if (event["type"] != "REQUEST") cb("Unauthorized");
+
   try {
-    winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
+    const encodedCreds = event.queryStringParameters.token;
 
-    const originalPass = process.env.GITHUB_LOGIN;
+    const buff = Buffer.from(encodedCreds, "base64");
+    const plainCreds = buff.toString("utf-8").split(":");
+    const [username, password] = plainCreds;
 
-    console.log("!!originalPass", originalPass);
+    console.log("!!username, password", username, password);
 
-    const result = true;
+    const storedUserPassword = process.env[username];
+    const effect =
+      !storedUserPassword || storedUserPassword != password ? "Deny" : "Allow";
 
-    winstonLogger.logRequest(`!!isAuthorized: ${JSON.stringify(result)}`);
+    const policy = generatePolicy(encodedCreds, event.methodArn, effect);
 
-    return formatSuccessResponse();
+    cb(null, policy);
+
+    winstonLogger.logRequest(`!!policy: ${JSON.stringify(policy)}`);
+
+    // return formatSuccessResponse();
   } catch (err) {
-    return formatErrorResponse(err);
+    cb("Unauthorized", err.message);
+    // return formatErrorResponse(err);
   }
+};
+
+const generatePolicy = (
+  principalId: string,
+  resource: string | string[],
+  effect = "Allow"
+): APIGatewayAuthorizerResult => {
+  return {
+    principalId,
+    policyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "execute-api:Invoke",
+          Effect: effect,
+          Resource: resource,
+        },
+      ],
+    },
+  };
 };
