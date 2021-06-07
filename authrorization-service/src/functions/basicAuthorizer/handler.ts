@@ -1,53 +1,49 @@
 import "source-map-support/register";
 
 import {
-  APIGatewayAuthorizerCallback,
   APIGatewayRequestAuthorizerEvent,
   APIGatewayAuthorizerResult,
-  APIGatewayAuthorizerResultContext,
-  PolicyDocument,
-  APIGatewayEventRequestContext,
+  CustomAuthorizerCallback,
 } from "aws-lambda";
-import {
-  formatSuccessResponse,
-  formatErrorResponse,
-} from "@libs/apiResponseBuilder";
 import { winstonLogger } from "@libs/winstonLogger";
-import { ResponseType } from "src/types";
 
 export const basicAuthorizer = async (
   event: APIGatewayRequestAuthorizerEvent,
-  _context: APIGatewayEventRequestContext,
-  cb: APIGatewayAuthorizerCallback
-  // ): Promise<APIGatewayAuthorizerResult> => {
-): Promise<void> => {
+  _context,
+  cb: CustomAuthorizerCallback
+): Promise<void | APIGatewayAuthorizerResult> => {
   winstonLogger.logRequest(`!!Incoming event: ${JSON.stringify(event)}`);
 
-  if (event["type"] != "REQUEST") cb("Unauthorized");
+  if (event.type !== "REQUEST") {
+    cb("Unauthorized");
+    return;
+  }
 
   try {
-    const encodedCreds = event.queryStringParameters.token;
-
+    const encodedCreds = event.headers["Authorization"].split(" ")[1];
     const buff = Buffer.from(encodedCreds, "base64");
     const plainCreds = buff.toString("utf-8").split(":");
     const [username, password] = plainCreds;
 
-    console.log("!!username, password", username, password);
+    if (!username || !password) {
+      cb("Unauthorized");
+      return;
+    }
 
-    const storedUserPassword = process.env[username];
+    const storedUserPassword = process.env.APP_PASSWORD;
+
     const effect =
       !storedUserPassword || storedUserPassword != password ? "Deny" : "Allow";
 
     const policy = generatePolicy(encodedCreds, event.methodArn, effect);
 
+    winstonLogger.logRequest(`!!Policy: ${JSON.stringify(policy)}`);
+
     cb(null, policy);
-
-    winstonLogger.logRequest(`!!policy: ${JSON.stringify(policy)}`);
-
-    // return formatSuccessResponse();
   } catch (err) {
+    winstonLogger.logRequest(`!!Error: ${JSON.stringify(err)}`);
+
     cb("Unauthorized", err.message);
-    // return formatErrorResponse(err);
   }
 };
 

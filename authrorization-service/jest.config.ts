@@ -7,7 +7,6 @@ const config: Config.InitialOptions = {
   preset: "ts-jest",
   testEnvironment: "node",
   modulePaths: ["<rootDir>"],
-  setupFiles: ["<rootDir>/setupJestEnv.js"],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
 };
 

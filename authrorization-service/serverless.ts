@@ -4,7 +4,6 @@ const serverlessConfiguration: AWS = {
   service: "authrorization-service",
   frameworkVersion: "2",
   custom: {
-    basicAuthorizer: "${self:functions.basicAuthorizer}",
     webpack: {
       webpackConfig: "./webpack.config.js",
       includeModules: true,
@@ -28,13 +27,16 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       ENV_STAGE: "${opt:stage, 'dev'}",
+      APP_PASSWORD: "${env:APP_PASSWORD, ''}",
     },
     lambdaHashingVersion: "20201221",
   },
   resources: {
     Outputs: {
       basicAuthorizer: {
-        Value: "${self:custom.basicAuthorizer}",
+        Value: {
+          "Fn::GetAtt": "BasicAuthorizerLambdaFunction.Arn",
+        },
         Export: {
           Name: "basicAuthorizer",
         },
@@ -44,7 +46,6 @@ const serverlessConfiguration: AWS = {
   functions: {
     basicAuthorizer: {
       handler: "handler.basicAuthorizer",
-      name: "basicAuthorizer",
     },
   },
 };
