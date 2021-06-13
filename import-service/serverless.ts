@@ -59,6 +59,23 @@ const serverlessConfiguration: AWS = {
       },
     },
   },
+  resources: {
+    Resources: {
+      GatewayResponseDefault4XX: {
+        Type: "AWS::ApiGateway::GatewayResponse",
+        Properties: {
+          ResponseParameters: {
+            "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+            "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
+          },
+          ResponseType: "DEFAULT_4XX",
+          RestApiId: {
+            Ref: "ApiGatewayRestApi",
+          },
+        },
+      },
+    },
+  },
   functions: {
     importProductsFile: {
       handler: "handler.importProductsFile",
@@ -74,6 +91,14 @@ const serverlessConfiguration: AWS = {
                   name: true,
                 },
               },
+            },
+            authorizer: {
+              name: "basicAuthorizer",
+              arn: "${cf:authrorization-service-dev.basicAuthorizer}",
+              managedExternally: false,
+              resultTtlInSeconds: 0,
+              identitySource: "method.request.header.Authorization",
+              type: "request",
             },
           },
         },
