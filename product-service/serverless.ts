@@ -20,6 +20,19 @@ const serverlessConfiguration: AWS = {
   ],
   resources: {
     Resources: {
+      ApiGatewayAuthorizer: {
+        DependsOn: ["ApiGatewayRestApi"],
+        Type: "AWS::ApiGateway::Authorizer",
+        Properties: {
+          Name: "cognito-authorizer",
+          IdentitySource: "method.request.header.Authorization",
+          RestApiId: {
+            Ref: "ApiGatewayRestApi",
+          },
+          Type: "COGNITO_USER_POOLS",
+          ProviderARNs: ["${cf:authrorization-service-dev.CognitoUserPoolArn}"],
+        },
+      },
       catalogItemsQueue: {
         Type: "AWS::SQS::Queue",
         Properties: {
@@ -130,6 +143,10 @@ const serverlessConfiguration: AWS = {
             method: "get",
             path: "products",
             cors: true,
+            authorizer: {
+              type: "COGNITO_USER_POOLS",
+              authorizerId: { Ref: "ApiGatewayAuthorizer" },
+            },
           },
         },
       ],
@@ -148,6 +165,10 @@ const serverlessConfiguration: AWS = {
                   id: true,
                 },
               },
+            },
+            authorizer: {
+              type: "COGNITO_USER_POOLS",
+              authorizerId: { Ref: "ApiGatewayAuthorizer" },
             },
           },
         },

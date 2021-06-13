@@ -32,6 +32,35 @@ const serverlessConfiguration: AWS = {
     lambdaHashingVersion: "20201221",
   },
   resources: {
+    Resources: {
+      CognitoUserPool: {
+        Type: "AWS::Cognito::UserPool",
+        Properties: {
+          MfaConfiguration: "OFF",
+          UserPoolName: "metal-tickets-pool",
+          UsernameAttributes: ["email"],
+          Policies: {
+            PasswordPolicy: {
+              MinimumLength: 6,
+              RequireLowercase: "False",
+              RequireNumbers: "True",
+              RequireSymbols: "False",
+              RequireUppercase: "True",
+            },
+          },
+        },
+      },
+      CognitoUserPoolClient: {
+        Type: "AWS::Cognito::UserPoolClient",
+        Properties: {
+          ClientName: "metal-tickets-client",
+          GenerateSecret: "False",
+          UserPoolId: {
+            Ref: "CognitoUserPool",
+          },
+        },
+      },
+    },
     Outputs: {
       basicAuthorizer: {
         Value: {
@@ -39,6 +68,14 @@ const serverlessConfiguration: AWS = {
         },
         Export: {
           Name: "basicAuthorizer",
+        },
+      },
+      CognitoUserPoolArn: {
+        Value: {
+          "Fn::GetAtt": "CognitoUserPool.Arn",
+        },
+        Export: {
+          Name: "CognitoUserPoolArn",
         },
       },
     },
