@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  nextjs:
+    container_name: cart-api
+    ports:
+      - 4000:4000
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/src/app
+    env_file:
+      - .env.production
