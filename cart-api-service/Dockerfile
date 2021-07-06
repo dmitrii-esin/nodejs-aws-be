@@ -8,11 +8,10 @@ RUN npm run build && npm prune --production
 # Stage 2: And then copy over node_modules, etc from that stage to the smaller base image
 FROM node:lts-slim@sha256:f07d995a6b0bb73e3bd8fa42ba328dd0481f4f0a4c0c39008c05d91602bba6f1 as production
 USER node
-ARG PORT
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --chown=node:node --from=builder /app/dist ./dist
 COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-EXPOSE $PORT
+EXPOSE 4000
 ENTRYPOINT [ "node" ]
 CMD [ "dist/main.js" ]
