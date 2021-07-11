@@ -23,7 +23,8 @@
     "cart-api:start": "docker run -p 127.0.0.1:80:4000/tcp cart-api",
     "dockerfile:lint": "node ./node_modules/.bin/dockerfilelint ./Dockerfile",
     "eb:init": "eb init -r eu-west-1",
-    "eb:create": "eb create --single --cname dmitrii-esin-cart-api-develop"
+    "eb:create": "eb create --single --cname dmitrii-esin-cart-api-develop",
+    "eb:terminate": "eb terminate"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",
